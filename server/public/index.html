@@ -8,20 +8,11 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:           #080d16;
-      --card:         #111827;
-      --card-border:  rgba(255,255,255,0.07);
-      --text:         #f1f5f9;
-      --muted:        #94a3b8;
-      --orange:       #fb923c;
-      --amber:        #fbbf24;
-      --teal:         #2dd4bf;
-      --blue:         #60a5fa;
-      --cyan:         #22d3ee;
-      --yellow:       #facc15;
-      --purple:       #a78bfa;
-      --green:        #4ade80;
-      --red:          #f87171;
+      --bg:     #080d16;
+      --card:   #111827;
+      --border: rgba(255,255,255,0.07);
+      --text:   #f1f5f9;
+      --muted:  #94a3b8;
     }
 
     body {
@@ -32,242 +23,216 @@
       padding: 1.5rem 1rem 2rem;
     }
 
-    /* ─── Header ─── */
+    /* ── Header ── */
     header { text-align: center; margin-bottom: 2rem; }
 
     header h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-size: 1.8rem; font-weight: 700;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       margin-bottom: 0.4rem;
     }
 
     .status-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      color: var(--muted);
-      font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem; color: var(--muted); font-size: 0.85rem;
     }
 
     .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      flex-shrink: 0;
-      animation: blink 2s infinite;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #4ade80; flex-shrink: 0; animation: blink 2s infinite;
     }
-    .dot.offline { background: var(--red); animation: none; }
+    .dot.offline { background: #f87171; animation: none; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.35; }
-    }
-
-    /* ─── Grid ─── */
+    /* ── Grid ── */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-      gap: 1rem;
-      max-width: 1100px;
-      margin: 0 auto;
+      gap: 1rem; max-width: 1100px; margin: 0 auto;
     }
 
-    /* ─── Cards ─── */
+    /* ── Cards ── */
     .card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 1.4rem 1.5rem 1.5rem;
-      position: relative;
-      overflow: hidden;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 18px; padding: 1.4rem 1.5rem 1.5rem;
+      position: relative; overflow: hidden;
     }
-
-    .card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      pointer-events: none;
-      background: radial-gradient(ellipse at 0% 0%, rgba(255,255,255,0.03) 0%, transparent 70%);
-    }
-
-    /* Top accent bar */
     .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      border-radius: 18px 18px 0 0;
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; border-radius: 18px 18px 0 0;
     }
     .card.outdoor::before   { background: linear-gradient(90deg, #f97316, #fbbf24); }
-    .card.indoor::before    { background: linear-gradient(90deg, #2dd4bf, #60a5fa); }
     .card.wind::before      { background: linear-gradient(90deg, #60a5fa, #818cf8); }
     .card.rain::before      { background: linear-gradient(90deg, #22d3ee, #0ea5e9); }
     .card.lightning::before { background: linear-gradient(90deg, #facc15, #f97316); }
     .card.solar::before     { background: linear-gradient(90deg, #a78bfa, #f472b6); }
 
-    /* Card header */
     .ch {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 1.1rem;
     }
-
+    .ch-left { display: flex; align-items: center; gap: 0.5rem; }
     .ch-icon { font-size: 1.1rem; }
-
     .ch-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
+      font-size: 0.75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted);
     }
+
+    .chart-btn {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+      color: var(--muted); border-radius: 8px; padding: 5px 9px;
+      cursor: pointer; display: flex; align-items: center; gap: 4px;
+      transition: background 0.15s;
+    }
+    .chart-btn:hover { background: rgba(255,255,255,0.14); color: var(--text); }
 
     /* Big value */
-    .bv {
-      font-size: 3.6rem;
-      font-weight: 300;
-      line-height: 1;
-      letter-spacing: -0.02em;
-    }
-    .bu {
-      font-size: 1.6rem;
-      font-weight: 300;
-      color: var(--muted);
-    }
+    .bv { font-size: 3.6rem; font-weight: 300; line-height: 1; letter-spacing: -0.02em; }
+    .bu { font-size: 1.6rem; font-weight: 300; color: var(--muted); }
+    .outdoor .bv { color: #fb923c; }
 
-    .outdoor .bv { color: var(--orange); }
-    .indoor  .bv { color: var(--teal); }
-
-    /* Sub-lines */
-    .sub {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-top: 0.45rem;
-    }
+    .sub { font-size: 0.85rem; color: var(--muted); margin-top: 0.45rem; }
     .sub b { color: var(--text); }
 
-    /* Humidity bar */
     .hbar-wrap {
-      margin-top: 0.9rem;
-      height: 5px;
-      background: rgba(255,255,255,0.07);
-      border-radius: 9999px;
-      overflow: hidden;
+      margin-top: 0.9rem; height: 5px;
+      background: rgba(255,255,255,0.07); border-radius: 9999px; overflow: hidden;
     }
     .hbar-fill {
-      height: 100%;
-      border-radius: 9999px;
-      background: linear-gradient(90deg, var(--blue), var(--purple));
-      transition: width 0.6s ease;
+      height: 100%; border-radius: 9999px;
+      background: linear-gradient(90deg, #60a5fa, #a78bfa); transition: width 0.6s ease;
     }
 
-    /* ─── Wind card ─── */
-    .wind-layout {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-    }
-
+    /* ── Wind ── */
+    .wind-layout { display: flex; align-items: center; gap: 1.25rem; }
     .compass-svg { width: 96px; height: 96px; flex-shrink: 0; }
+    .wind-bv { font-size: 2.8rem; font-weight: 300; color: #60a5fa; line-height: 1; }
 
-    .wind-bv {
-      font-size: 2.8rem;
-      font-weight: 300;
-      color: var(--blue);
-      line-height: 1;
-    }
-
-    /* ─── Rain card ─── */
+    /* ── Rain ── */
     .rain-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.45rem 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .rain-row:last-child { border-bottom: none; }
     .rain-label { color: var(--muted); font-size: 0.85rem; }
-    .rain-val   { font-weight: 600; color: var(--cyan); font-size: 0.95rem; }
+    .rain-val   { font-weight: 600; color: #22d3ee; font-size: 0.95rem; }
 
-    /* ─── Lightning card ─── */
-    .lightning .bv { color: var(--yellow); }
-
+    /* ── Lightning ── */
+    .lightning .bv { color: #facc15; }
     .l-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      background: rgba(250,204,21,0.1);
-      border: 1px solid rgba(250,204,21,0.25);
-      border-radius: 9999px;
-      padding: 0.25rem 0.75rem;
-      font-size: 0.8rem;
-      color: var(--yellow);
-      margin-top: 0.8rem;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: rgba(250,204,21,0.1); border: 1px solid rgba(250,204,21,0.25);
+      border-radius: 9999px; padding: 0.25rem 0.75rem;
+      font-size: 0.8rem; color: #facc15; margin-top: 0.8rem;
     }
 
-    /* ─── UV & Solar card ─── */
+    /* ── UV / Solar ── */
     .uv-label-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
+      display: flex; justify-content: space-between; align-items: baseline;
       margin-bottom: 0.4rem;
     }
-    .uv-cat { font-weight: 600; color: var(--purple); }
-
+    .uv-cat { font-weight: 600; color: #a78bfa; }
     .uv-bar {
-      height: 8px;
-      border-radius: 9999px;
-      background: linear-gradient(90deg, #4ade80 0%, #facc15 40%, #f97316 65%, #ef4444 80%, #8b5cf6 100%);
-      position: relative;
+      height: 8px; border-radius: 9999px; position: relative;
+      background: linear-gradient(90deg,#4ade80 0%,#facc15 40%,#f97316 65%,#ef4444 80%,#8b5cf6 100%);
       margin-bottom: 0.25rem;
     }
     .uv-dot {
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 14px; height: 14px;
-      background: #fff;
-      border-radius: 50%;
-      box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #fff;
-      transition: left 0.6s ease;
+      position: absolute; top: 50%; transform: translate(-50%,-50%);
+      width: 14px; height: 14px; background: #fff; border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #fff; transition: left 0.6s ease;
     }
     .uv-scale {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.7rem;
-      color: var(--muted);
+      display: flex; justify-content: space-between;
+      font-size: 0.7rem; color: var(--muted);
+    }
+    .solar-bv { font-size: 2.6rem; font-weight: 300; color: #a78bfa; line-height: 1; margin-top: 1rem; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(8,13,22,0.92); z-index: 100;
+      padding: 1.5rem 1rem; overflow-y: auto;
+      justify-content: center; align-items: flex-start;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: var(--card); border-radius: 16px;
+      padding: 1.5rem; width: 100%; max-width: 640px;
+      border: 1px solid rgba(255,255,255,0.1); margin-top: 1.5rem;
     }
 
-    .solar-bv {
-      font-size: 2.6rem;
-      font-weight: 300;
-      color: var(--purple);
-      line-height: 1;
-      margin-top: 1rem;
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 1.25rem;
+    }
+    .modal-title    { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .modal-subtitle { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+
+    .close-btn {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+      color: var(--muted); border-radius: 8px; padding: 6px 12px;
+      cursor: pointer; display: flex; align-items: center; gap: 5px;
+      font-size: 0.82rem; white-space: nowrap; margin-left: 1rem;
+    }
+    .close-btn:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+
+    .date-row {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      background: rgba(255,255,255,0.03); border-radius: 10px;
+      padding: 10px 12px; border: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 0.85rem;
+    }
+    .date-row label { font-size: 0.78rem; color: var(--muted); }
+
+    input[type="date"] {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text); border-radius: 8px; padding: 5px 9px;
+      font-size: 0.8rem; cursor: pointer; color-scheme: dark; font-family: inherit;
+    }
+    input[type="date"]:focus { outline: none; border-color: rgba(255,255,255,0.3); }
+
+    .apply-btn {
+      background: rgba(96,165,250,0.15); border: 1px solid rgba(96,165,250,0.35);
+      color: #60a5fa; border-radius: 8px; padding: 5px 14px;
+      cursor: pointer; font-size: 0.8rem; font-family: inherit;
+    }
+    .apply-btn:hover { background: rgba(96,165,250,0.25); }
+
+    .quick-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+    .quick-btn {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted); border-radius: 6px; padding: 4px 12px;
+      cursor: pointer; font-size: 0.75rem; font-family: inherit;
+    }
+    .quick-btn:hover  { background: rgba(255,255,255,0.1); color: var(--text); }
+    .quick-btn.active { background: rgba(255,255,255,0.12); color: var(--text); border-color: rgba(255,255,255,0.3); }
+
+    .chart-wrap { position: relative; height: 250px; }
+
+    .no-data {
+      display: flex; align-items: center; justify-content: center;
+      height: 250px; color: var(--muted); font-size: 0.875rem; text-align: center;
     }
 
-    /* ─── Footer ─── */
+    .chart-legend {
+      display: flex; gap: 16px; margin-top: 0.85rem;
+      font-size: 0.75rem; color: var(--muted); flex-wrap: wrap;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot  { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+    /* ── Footer ── */
     footer {
-      text-align: center;
-      margin-top: 1.75rem;
-      color: var(--muted);
-      font-size: 0.75rem;
-      opacity: 0.7;
+      text-align: center; margin-top: 2rem;
+      color: var(--muted); font-size: 0.75rem; opacity: 0.7;
     }
 
-    /* ─── Responsive ─── */
     @media (max-width: 480px) {
-      .bv  { font-size: 2.8rem; }
-      .bu  { font-size: 1.25rem; }
-      .wind-bv { font-size: 2.2rem; }
-      header h1 { font-size: 1.4rem; }
+      .bv { font-size: 2.8rem; } .bu { font-size: 1.25rem; }
+      .wind-bv { font-size: 2.2rem; } header h1 { font-size: 1.4rem; }
     }
   </style>
 </head>
@@ -285,45 +250,50 @@
 
   <!-- Außentemperatur -->
   <div class="card outdoor">
-    <div class="ch"><span class="ch-icon">🌡️</span><span class="ch-title">Außen</span></div>
+    <div class="ch">
+      <div class="ch-left">
+        <span class="ch-icon">🌡️</span>
+        <span class="ch-title">Außen</span>
+      </div>
+      <button class="chart-btn" onclick="openChart('temp')" title="Temperatur & Luftfeuchtigkeit – Verlauf" aria-label="Verlauf anzeigen">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </button>
+    </div>
     <div class="bv"><span id="outTemp">--</span><span class="bu"> °C</span></div>
     <div class="sub">Luftfeuchtigkeit: <b id="outHumi">--%</b></div>
     <div class="hbar-wrap"><div class="hbar-fill" id="outHumiBar" style="width:0%"></div></div>
   </div>
 
-  <!-- Innentemperatur -->
-  <div class="card indoor">
-    <div class="ch"><span class="ch-icon">🏠</span><span class="ch-title">Innen</span></div>
-    <div class="bv"><span id="inTemp">--</span><span class="bu"> °C</span></div>
-    <div class="sub">Luftfeuchtigkeit: <b id="inHumi">--%</b></div>
-    <div class="hbar-wrap"><div class="hbar-fill" id="inHumiBar" style="width:0%"></div></div>
-  </div>
-
   <!-- Wind -->
   <div class="card wind">
-    <div class="ch"><span class="ch-icon">💨</span><span class="ch-title">Wind</span></div>
+    <div class="ch">
+      <div class="ch-left">
+        <span class="ch-icon">💨</span>
+        <span class="ch-title">Wind</span>
+      </div>
+      <button class="chart-btn" onclick="openChart('wind')" title="Windverlauf" aria-label="Verlauf anzeigen">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </button>
+    </div>
     <div class="wind-layout">
       <svg class="compass-svg" viewBox="0 0 100 100" aria-hidden="true">
         <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
-        <!-- tick marks -->
         <g stroke="rgba(255,255,255,0.15)" stroke-width="1">
           <line x1="50" y1="7"  x2="50" y2="14"/>
           <line x1="93" y1="50" x2="86" y2="50"/>
           <line x1="50" y1="93" x2="50" y2="86"/>
           <line x1="7"  y1="50" x2="14" y2="50"/>
         </g>
-        <text x="50" y="11"  text-anchor="middle" fill="#94a3b8" font-size="9"  font-family="system-ui" font-weight="600">N</text>
-        <text x="89" y="54"  text-anchor="middle" fill="#94a3b8" font-size="9"  font-family="system-ui">O</text>
-        <text x="50" y="97"  text-anchor="middle" fill="#94a3b8" font-size="9"  font-family="system-ui">S</text>
-        <text x="11" y="54"  text-anchor="middle" fill="#94a3b8" font-size="9"  font-family="system-ui">W</text>
-        <!-- Arrow: points to where wind is GOING -->
-        <g id="windArrow" style="transform-origin:50px 50px; transform:rotate(0deg); transition:transform 0.6s ease">
+        <text x="50" y="11"  text-anchor="middle" fill="#94a3b8" font-size="9" font-family="system-ui" font-weight="600">N</text>
+        <text x="89" y="54"  text-anchor="middle" fill="#94a3b8" font-size="9" font-family="system-ui">O</text>
+        <text x="50" y="97"  text-anchor="middle" fill="#94a3b8" font-size="9" font-family="system-ui">S</text>
+        <text x="11" y="54"  text-anchor="middle" fill="#94a3b8" font-size="9" font-family="system-ui">W</text>
+        <g id="windArrow" style="transform-origin:50px 50px;transform:rotate(0deg);transition:transform 0.6s ease">
           <polygon points="50,13 46,55 50,49 54,55" fill="#60a5fa"/>
-          <polygon points="50,87 46,45 50,49 54,45" fill="rgba(96,165,250,0.25)"/>
+          <polygon points="50,87 46,45 50,49 54,45" fill="rgba(96,165,250,0.22)"/>
         </g>
         <circle cx="50" cy="50" r="3.5" fill="#60a5fa"/>
       </svg>
-
       <div>
         <div class="wind-bv"><span id="windSpeed">--</span><span style="font-size:1.1rem;color:var(--muted)"> km/h</span></div>
         <div class="sub" style="margin-top:0.5rem">Böe: <b id="windGust">--</b> km/h</div>
@@ -335,7 +305,15 @@
 
   <!-- Niederschlag -->
   <div class="card rain">
-    <div class="ch"><span class="ch-icon">🌧️</span><span class="ch-title">Niederschlag</span></div>
+    <div class="ch">
+      <div class="ch-left">
+        <span class="ch-icon">🌧️</span>
+        <span class="ch-title">Niederschlag</span>
+      </div>
+      <button class="chart-btn" onclick="openChart('rain')" title="Niederschlagsverlauf" aria-label="Verlauf anzeigen">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </button>
+    </div>
     <div class="rain-row"><span class="rain-label">Aktuelle Rate</span><span class="rain-val"><span id="rainRate">--</span> mm/h</span></div>
     <div class="rain-row"><span class="rain-label">Ereignis</span><span class="rain-val"><span id="rainEvent">--</span> mm</span></div>
     <div class="rain-row"><span class="rain-label">Heute</span><span class="rain-val"><span id="rainDaily">--</span> mm</span></div>
@@ -343,17 +321,33 @@
     <div class="rain-row"><span class="rain-label">Dieser Monat</span><span class="rain-val"><span id="rainMonthly">--</span> mm</span></div>
   </div>
 
-  <!-- Blitz -->
+  <!-- Blitzentladungen -->
   <div class="card lightning">
-    <div class="ch"><span class="ch-icon">⚡</span><span class="ch-title">Blitzentladungen</span></div>
+    <div class="ch">
+      <div class="ch-left">
+        <span class="ch-icon">⚡</span>
+        <span class="ch-title">Blitzentladungen</span>
+      </div>
+      <button class="chart-btn" onclick="openChart('lightning')" title="Blizverlauf" aria-label="Verlauf anzeigen">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </button>
+    </div>
     <div class="bv"><span id="lCount">--</span><span class="bu"> heute</span></div>
     <div class="sub" style="margin-top:0.6rem">Letzter Einschlag: <b id="lDist">-- km</b></div>
     <div id="lBadge" class="l-badge" style="display:none">⚡ Zuletzt: <span id="lTime">--</span></div>
   </div>
 
-  <!-- UV & Solar -->
+  <!-- UV & Solarstrahlung -->
   <div class="card solar">
-    <div class="ch"><span class="ch-icon">☀️</span><span class="ch-title">UV & Solarstrahlung</span></div>
+    <div class="ch">
+      <div class="ch-left">
+        <span class="ch-icon">☀️</span>
+        <span class="ch-title">UV & Solarstrahlung</span>
+      </div>
+      <button class="chart-btn" onclick="openChart('uv')" title="UV & Solar – Verlauf" aria-label="Verlauf anzeigen">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </button>
+    </div>
     <div class="uv-label-row">
       <span style="font-size:0.85rem;color:var(--muted)">UV-Index</span>
       <span><b id="uvVal" style="color:var(--text)">--</b> <span class="uv-cat" id="uvCat"></span></span>
@@ -366,106 +360,337 @@
 
 </div>
 
+<!-- ── History modal ── -->
+<div class="modal-overlay" id="chartModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">--</div>
+        <div class="modal-subtitle" id="modalSubtitle"></div>
+      </div>
+      <button class="close-btn" onclick="closeChart()" aria-label="Schließen">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Schließen
+      </button>
+    </div>
+
+    <div class="date-row">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <label for="dateFrom">Von</label>
+      <input type="date" id="dateFrom">
+      <label for="dateTo">Bis</label>
+      <input type="date" id="dateTo">
+      <button class="apply-btn" onclick="applyDateRange()">Anzeigen</button>
+    </div>
+
+    <div class="quick-row">
+      <button class="quick-btn" id="q7"   onclick="setQuick(7)">7 Tage</button>
+      <button class="quick-btn" id="q30"  onclick="setQuick(30)">30 Tage</button>
+      <button class="quick-btn" id="q90"  onclick="setQuick(90)">3 Monate</button>
+      <button class="quick-btn" id="qall" onclick="setQuick(0)">Alles</button>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="histChart" role="img" aria-label="Historische Wetterdaten im gewählten Zeitraum">Verlaufsdaten im gewählten Zeitraum.</canvas>
+      <div class="no-data" id="noDataMsg" style="display:none">Keine Daten für diesen Zeitraum.<br>Der Server sammelt Tagesdaten ab dem ersten Empfang.</div>
+    </div>
+    <div class="chart-legend" id="chartLegend"></div>
+
+  </div>
+</div>
+
 <footer>Gründau · Daten werden alle 30 Sekunden aktualisiert</footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-  const DIR = ['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+'use strict';
 
-  function degToDir(d) {
-    if (d == null) return '--';
-    return DIR[Math.round(d / 22.5) % 16];
-  }
+// ── Constants ────────────────────────────────────────────────
+const DIR = ['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
 
-  function uvCategory(uv) {
-    if (uv == null) return '';
-    if (uv < 3)  return 'Niedrig';
-    if (uv < 6)  return 'Mittel';
-    if (uv < 8)  return 'Hoch';
-    if (uv < 11) return 'Sehr hoch';
-    return 'Extrem';
-  }
+const CHART_CONFIGS = {
+  temp: {
+    title: 'Temperatur & Luftfeuchtigkeit',
+    datasets: [
+      { key: 'outTemp',  label: 'Ø Temperatur',     unit: '°C',  color: '#fb923c', yAxisID: 'y'  },
+      { key: 'outHumi',  label: 'Ø Luftfeuchtigkeit', unit: '%', color: '#60a5fa', yAxisID: 'y1' },
+    ],
+  },
+  wind: {
+    title: 'Windgeschwindigkeit',
+    datasets: [
+      { key: 'windSpeed',    label: 'Ø Wind',    unit: 'km/h', color: '#60a5fa', yAxisID: 'y' },
+      { key: 'windSpeedMax', label: 'Max. Böe',  unit: 'km/h', color: '#818cf8', yAxisID: 'y' },
+    ],
+  },
+  rain: {
+    title: 'Täglicher Niederschlag',
+    chartType: 'bar',
+    datasets: [
+      { key: 'rainDaily', label: 'Niederschlag', unit: 'mm', color: '#22d3ee', yAxisID: 'y' },
+    ],
+  },
+  lightning: {
+    title: 'Blitzentladungen pro Tag',
+    chartType: 'bar',
+    datasets: [
+      { key: 'lightningCount', label: 'Blitze', unit: '', color: '#facc15', yAxisID: 'y' },
+    ],
+  },
+  uv: {
+    title: 'UV-Index & Solarstrahlung',
+    datasets: [
+      { key: 'uvIndex',  label: 'Ø UV-Index',       unit: '',     color: '#a78bfa', yAxisID: 'y'  },
+      { key: 'solarRad', label: 'Ø Solarstrahlung',  unit: 'W/m²', color: '#f97316', yAxisID: 'y1' },
+    ],
+  },
+};
 
-  function fmt(v, dec = 1) {
-    return v != null ? Number(v).toFixed(dec) : '--';
-  }
+// ── Helpers ──────────────────────────────────────────────────
+function degToDir(d) {
+  if (d == null) return '--';
+  return DIR[Math.round(d / 22.5) % 16];
+}
+function uvCategory(uv) {
+  if (uv == null) return '';
+  if (uv < 3)  return 'Niedrig';
+  if (uv < 6)  return 'Mittel';
+  if (uv < 8)  return 'Hoch';
+  if (uv < 11) return 'Sehr hoch';
+  return 'Extrem';
+}
+function fmt(v, dec = 1) { return v != null ? Number(v).toFixed(dec) : '--'; }
+function timeAgo(iso) {
+  if (!iso) return '--';
+  const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (s < 60)    return `vor ${s} s`;
+  if (s < 3600)  return `vor ${Math.floor(s / 60)} min`;
+  if (s < 86400) return `vor ${Math.floor(s / 3600)} h`;
+  return new Date(iso).toLocaleString('de-DE');
+}
+function el(id) { return document.getElementById(id); }
+function set(id, val) { const e = el(id); if (e) e.textContent = val; }
+function todayStr()    { return new Date().toLocaleDateString('en-CA'); }
+function daysAgoStr(n) { const d = new Date(); d.setDate(d.getDate() - n + 1); return d.toLocaleDateString('en-CA'); }
+function fmtLabel(str) { const [, m, d] = str.split('-'); return `${d}.${m}.`; }
 
-  function timeAgo(iso) {
-    if (!iso) return '--';
-    const s = Math.floor((Date.now() - new Date(iso)) / 1000);
-    if (s < 60)    return `vor ${s} s`;
-    if (s < 3600)  return `vor ${Math.floor(s / 60)} min`;
-    if (s < 86400) return `vor ${Math.floor(s / 3600)} h`;
-    return new Date(iso).toLocaleString('de-DE');
-  }
+// ── Live weather refresh ─────────────────────────────────────
+async function refresh() {
+  const dot  = el('dot');
+  const info = el('lastUpdate');
+  try {
+    const res = await fetch('/api/weather');
+    if (!res.ok) throw new Error('no data');
+    const d = await res.json();
 
-  function set(id, val) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = val;
-  }
+    dot.className = 'dot';
+    info.textContent = 'Zuletzt: ' + new Date(d.timestamp).toLocaleTimeString('de-DE');
 
-  async function refresh() {
-    const dot  = document.getElementById('dot');
-    const info = document.getElementById('lastUpdate');
-    try {
-      const res = await fetch('/api/weather');
-      if (!res.ok) throw new Error('no data');
-      const d = await res.json();
+    // Outdoor
+    set('outTemp', fmt(d.outdoor.temp));
+    set('outHumi', (d.outdoor.humidity ?? '--') + '%');
+    el('outHumiBar').style.width = (d.outdoor.humidity ?? 0) + '%';
 
-      dot.className = 'dot';
-      info.textContent = 'Zuletzt: ' + new Date(d.timestamp).toLocaleTimeString('de-DE');
+    // Wind
+    set('windSpeed', fmt(d.wind.speed));
+    set('windGust',  fmt(d.wind.gust));
+    set('windMax',   fmt(d.wind.maxDailyGust));
+    set('windDir',   degToDir(d.wind.direction));
+    if (d.wind.direction != null)
+      el('windArrow').style.transform = `rotate(${d.wind.direction}deg)`;
 
-      // Outdoor
-      set('outTemp', fmt(d.outdoor.temp));
-      set('outHumi', (d.outdoor.humidity ?? '--') + '%');
-      document.getElementById('outHumiBar').style.width = (d.outdoor.humidity ?? 0) + '%';
+    // Rain
+    set('rainRate',    fmt(d.rain.rate));
+    set('rainEvent',   fmt(d.rain.event));
+    set('rainDaily',   fmt(d.rain.daily));
+    set('rainWeekly',  fmt(d.rain.weekly));
+    set('rainMonthly', fmt(d.rain.monthly));
 
-      // Indoor
-      set('inTemp', fmt(d.indoor.temp));
-      set('inHumi', (d.indoor.humidity ?? '--') + '%');
-      document.getElementById('inHumiBar').style.width = (d.indoor.humidity ?? 0) + '%';
-
-      // Wind
-      set('windSpeed', fmt(d.wind.speed));
-      set('windGust',  fmt(d.wind.gust));
-      set('windMax',   fmt(d.wind.maxDailyGust));
-      set('windDir',   degToDir(d.wind.direction));
-      if (d.wind.direction != null) {
-        document.getElementById('windArrow').style.transform = `rotate(${d.wind.direction}deg)`;
-      }
-
-      // Rain
-      set('rainRate',    fmt(d.rain.rate));
-      set('rainEvent',   fmt(d.rain.event));
-      set('rainDaily',   fmt(d.rain.daily));
-      set('rainWeekly',  fmt(d.rain.weekly));
-      set('rainMonthly', fmt(d.rain.monthly));
-
-      // Lightning
-      set('lCount', d.lightning.count ?? '--');
-      set('lDist',  d.lightning.distance != null ? d.lightning.distance + ' km' : '-- km');
-      const badge = document.getElementById('lBadge');
-      if (d.lightning.lastTime) {
-        badge.style.display = 'inline-flex';
-        set('lTime', timeAgo(d.lightning.lastTime));
-      } else {
-        badge.style.display = 'none';
-      }
-
-      // UV
-      const uv = d.solar.uv;
-      set('uvVal', uv != null ? Number(uv).toFixed(1) : '--');
-      set('uvCat', uvCategory(uv));
-      document.getElementById('uvDot').style.left = Math.min((uv ?? 0) / 12 * 100, 100) + '%';
-      set('solarRad', d.solar.radiation ?? '--');
-
-    } catch (_) {
-      dot.className = 'dot offline';
-      info.textContent = 'Keine Verbindung zur Station';
+    // Lightning
+    set('lCount', d.lightning.count ?? '--');
+    set('lDist',  d.lightning.distance != null ? d.lightning.distance + ' km' : '-- km');
+    const badge = el('lBadge');
+    if (d.lightning.lastTime) {
+      badge.style.display = 'inline-flex';
+      set('lTime', timeAgo(d.lightning.lastTime));
+    } else {
+      badge.style.display = 'none';
     }
+
+    // UV / Solar
+    const uv = d.solar.uv;
+    set('uvVal', uv != null ? Number(uv).toFixed(1) : '--');
+    set('uvCat', uvCategory(uv));
+    el('uvDot').style.left = Math.min((uv ?? 0) / 12 * 100, 100) + '%';
+    set('solarRad', d.solar.radiation ?? '--');
+
+  } catch (_) {
+    dot.className = 'dot offline';
+    info.textContent = 'Keine Verbindung zur Station';
+  }
+}
+
+// ── Chart modal ──────────────────────────────────────────────
+let activeChart   = null;
+let currentSensor = null;
+
+function setActiveQuick(id) {
+  document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+  if (id) el(id).classList.add('active');
+}
+
+async function fetchAndRender() {
+  const from = el('dateFrom').value;
+  const to   = el('dateTo').value;
+  if (!from || !to) return;
+
+  let url = '/api/daily';
+  const p = [];
+  if (from) p.push('from=' + from);
+  if (to)   p.push('to='   + to);
+  if (p.length) url += '?' + p.join('&');
+
+  let data = [];
+  try {
+    const res = await fetch(url);
+    data = await res.json();
+  } catch (_) { data = []; }
+
+  renderChart(data);
+}
+
+function renderChart(data) {
+  const cfg = CHART_CONFIGS[currentSensor];
+
+  if (activeChart) { activeChart.destroy(); activeChart = null; }
+
+  const canvas  = el('histChart');
+  const noData  = el('noDataMsg');
+  const legend  = el('chartLegend');
+
+  if (!data || data.length === 0) {
+    canvas.style.display  = 'none';
+    noData.style.display  = 'flex';
+    legend.innerHTML = '';
+    return;
+  }
+  canvas.style.display = 'block';
+  noData.style.display = 'none';
+
+  el('modalSubtitle').textContent =
+    fmtLabel(data[0].date) + ' – ' + fmtLabel(data[data.length - 1].date) +
+    ' · ' + data.length + ' Tage (Tagesdurchschnitt)';
+
+  const step   = Math.max(1, Math.floor(data.length / 10));
+  const labels = data.map((d, i) => i % step === 0 ? fmtLabel(d.date) : '');
+  const isBar  = cfg.chartType === 'bar';
+  const hasDual = cfg.datasets.length > 1 && cfg.datasets.some(d => d.yAxisID === 'y1');
+
+  const datasets = cfg.datasets.map(ds => ({
+    label:           ds.label,
+    data:            data.map(d => d[ds.key] ?? null),
+    borderColor:     ds.color,
+    backgroundColor: isBar ? ds.color + 'bb' : ds.color + '22',
+    borderWidth:     isBar ? 0 : 1.5,
+    pointRadius:     data.length < 15 ? 3 : 0,
+    fill:            !isBar,
+    tension:         0.35,
+    yAxisID:         ds.yAxisID,
+    spanGaps:        true,
+  }));
+
+  const scales = {
+    x: {
+      ticks:  { color: '#94a3b8', font: { size: 11 }, maxRotation: 0 },
+      grid:   { color: 'rgba(255,255,255,0.04)' },
+      border: { color: 'rgba(255,255,255,0.08)' },
+    },
+    y: {
+      position: 'left',
+      ticks:    { color: cfg.datasets[0].color, font: { size: 11 } },
+      grid:     { color: 'rgba(255,255,255,0.04)' },
+      border:   { color: 'rgba(255,255,255,0.08)' },
+    },
+  };
+  if (hasDual) {
+    scales.y1 = {
+      position: 'right',
+      ticks:    { color: cfg.datasets[1].color, font: { size: 11 } },
+      grid:     { drawOnChartArea: false },
+      border:   { color: 'rgba(255,255,255,0.08)' },
+    };
   }
 
-  refresh();
-  setInterval(refresh, 30000);
+  activeChart = new Chart(canvas, {
+    type: isBar ? 'bar' : 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a2332',
+          titleColor:      '#94a3b8',
+          bodyColor:       '#f1f5f9',
+          borderColor:     'rgba(255,255,255,0.1)',
+          borderWidth:     1,
+          callbacks: {
+            label(ctx) {
+              const u = cfg.datasets[ctx.datasetIndex].unit;
+              return ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(1)}${u ? ' ' + u : ''}`;
+            },
+          },
+        },
+      },
+      scales,
+    },
+  });
+
+  legend.innerHTML = cfg.datasets.map(ds =>
+    `<span class="legend-item"><span class="legend-dot" style="background:${ds.color}"></span>${ds.label}${ds.unit ? ' (' + ds.unit + ')' : ''}</span>`
+  ).join('');
+}
+
+function openChart(sensor) {
+  currentSensor = sensor;
+  set('modalTitle',    CHART_CONFIGS[sensor].title);
+  set('modalSubtitle', '');
+  el('dateFrom').value = daysAgoStr(30);
+  el('dateTo').value   = todayStr();
+  setActiveQuick('q30');
+  el('chartModal').classList.add('open');
+  fetchAndRender();
+}
+
+function closeChart() {
+  el('chartModal').classList.remove('open');
+  if (activeChart) { activeChart.destroy(); activeChart = null; }
+}
+
+function applyDateRange() {
+  setActiveQuick(null);
+  fetchAndRender();
+}
+
+function setQuick(days) {
+  el('dateFrom').value = days === 0 ? '2000-01-01' : daysAgoStr(days);
+  el('dateTo').value   = todayStr();
+  setActiveQuick(days === 7 ? 'q7' : days === 30 ? 'q30' : days === 90 ? 'q90' : days === 0 ? 'qall' : null);
+  fetchAndRender();
+}
+
+// Close on backdrop click
+el('chartModal').addEventListener('click', function(e) { if (e.target === this) closeChart(); });
+
+// Close on Escape
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeChart(); });
+
+// ── Start ────────────────────────────────────────────────────
+refresh();
+setInterval(refresh, 30000);
 </script>
 </body>
 </html>
