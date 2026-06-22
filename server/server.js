@@ -1,47 +1,100 @@
 const express = require('express');
-const path = require('path');
-const fs = require('fs');
+const path    = require('path');
+const fs      = require('fs');
 
-const app = express();
-const PORT = 3000;
-const DATA_FILE = '/data/weather.json';
-// Keep last 288 readings = ~24h at 5-min intervals
-const MAX_HISTORY = 288;
+const app         = express();
+const PORT        = 3000;
+const DATA_FILE   = '/data/weather.json';
+const DAILY_FILE  = '/data/daily.json';
+const MAX_HISTORY = 288; // ~24h at 5-min intervals
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-let latestData = null;
-let dataHistory = [];
+let latestData     = null;
+let dataHistory    = [];
+let dailySummaries = [];
+let dayAccum       = null;
 
-// --- Unit converters ---
-const toC    = f    => f    != null ? Math.round((parseFloat(f) - 32) * 5 / 9 * 10) / 10 : null;
-const toKmh  = mph  => mph  != null ? Math.round(parseFloat(mph) * 1.60934 * 10) / 10   : null;
-const toMm   = inch => inch != null ? Math.round(parseFloat(inch) * 25.4 * 10) / 10     : null;
-const toNum  = v    => v    != null ? parseFloat(v)  : null;
-const toInt  = v    => v    != null ? parseInt(v, 10): null;
+// ── Unit converters ──────────────────────────────────────────
+const toC   = f    => f    != null ? Math.round((parseFloat(f) - 32) * 5 / 9 * 10) / 10 : null;
+const toKmh = mph  => mph  != null ? Math.round(parseFloat(mph) * 1.60934 * 10) / 10    : null;
+const toMm  = inch => inch != null ? Math.round(parseFloat(inch) * 25.4 * 10) / 10      : null;
+const toNum = v    => v    != null ? parseFloat(v)   : null;
+const toInt = v    => v    != null ? parseInt(v, 10) : null;
 
-// --- Receive data from Ecowitt station (Ecowitt protocol) ---
-// Configure station: Protocol=Ecowitt, Path=/data/report/, Port=3000
+// ── Date helper (Europe/Berlin) ───────────────────────────────
+function getDateStr() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' }); // YYYY-MM-DD
+}
+
+// ── Daily accumulator ─────────────────────────────────────────
+function newAccum(date) {
+  return { date, n: 0,
+    tempSum: 0, tempMin: null, tempMax: null,
+    humiSum: 0,
+    windSum: 0, windMax: 0,
+    rainMax: 0,
+    uvSum:   0,
+    solarSum: 0,
+    lightning: 0,
+  };
+}
+
+function addToAccum(a, d) {
+  a.n++;
+  if (d.outdoor.temp != null) {
+    a.tempSum += d.outdoor.temp;
+    a.tempMin  = a.tempMin === null ? d.outdoor.temp : Math.min(a.tempMin, d.outdoor.temp);
+    a.tempMax  = a.tempMax === null ? d.outdoor.temp : Math.max(a.tempMax, d.outdoor.temp);
+  }
+  if (d.outdoor.humidity  != null) a.humiSum   += d.outdoor.humidity;
+  if (d.wind.speed        != null) { a.windSum  += d.wind.speed; a.windMax = Math.max(a.windMax, d.wind.speed); }
+  if (d.rain.daily        != null) a.rainMax    = Math.max(a.rainMax, d.rain.daily);
+  if (d.solar.uv          != null) a.uvSum      += d.solar.uv;
+  if (d.solar.radiation   != null) a.solarSum   += d.solar.radiation;
+  if (d.lightning.count   != null) a.lightning  = Math.max(a.lightning, d.lightning.count);
+}
+
+function finalizeAccum(a) {
+  if (!a || a.n === 0) return null;
+  return {
+    date:          a.date,
+    outTemp:       +(a.tempSum  / a.n).toFixed(1),
+    outTempMin:    a.tempMin,
+    outTempMax:    a.tempMax,
+    outHumi:       Math.round(a.humiSum / a.n),
+    windSpeed:     +(a.windSum  / a.n).toFixed(1),
+    windSpeedMax:  a.windMax,
+    rainDaily:     a.rainMax,
+    uvIndex:       +(a.uvSum    / a.n).toFixed(1),
+    solarRad:      Math.round(a.solarSum / a.n),
+    lightningCount: a.lightning,
+  };
+}
+
+function saveDailySummaries() {
+  try { fs.writeFileSync(DAILY_FILE, JSON.stringify(dailySummaries)); } catch (_) {}
+}
+
+// ── Receive push from Ecowitt station ────────────────────────
+// Station config: Protocol=Ecowitt, Path=/data/report/, Port=3000
 app.post('/data/report/', (req, res) => {
   const r = req.body;
+  const today = getDateStr();
 
   latestData = {
     timestamp: new Date().toISOString(),
-    indoor: {
-      temp:     toC(r.tempinf),
-      humidity: toInt(r.humidityin),
-    },
     outdoor: {
       temp:     toC(r.tempf),
       humidity: toInt(r.humidity),
     },
     wind: {
-      speed:       toKmh(r.windspeedmph),
-      gust:        toKmh(r.windgustmph),
-      maxDailyGust:toKmh(r.maxdailygust),
-      direction:   toInt(r.winddir),
+      speed:        toKmh(r.windspeedmph),
+      gust:         toKmh(r.windgustmph),
+      maxDailyGust: toKmh(r.maxdailygust),
+      direction:    toInt(r.winddir),
     },
     rain: {
       rate:    toMm(r.rainratein),
@@ -63,38 +116,79 @@ app.post('/data/report/', (req, res) => {
     },
   };
 
+  // ── Daily accumulator: roll over at midnight ──
+  if (!dayAccum) {
+    dayAccum = newAccum(today);
+  } else if (dayAccum.date !== today) {
+    const summary = finalizeAccum(dayAccum);
+    if (summary) {
+      dailySummaries = dailySummaries.filter(s => s.date !== summary.date);
+      dailySummaries.push(summary);
+      dailySummaries.sort((a, b) => a.date.localeCompare(b.date));
+      saveDailySummaries();
+    }
+    dayAccum = newAccum(today);
+  }
+  addToAccum(dayAccum, latestData);
+
+  // ── Short-term history ──
   dataHistory.push({ ...latestData });
   if (dataHistory.length > MAX_HISTORY) dataHistory.shift();
 
   try {
-    fs.writeFileSync(DATA_FILE, JSON.stringify({ latest: latestData, history: dataHistory }));
+    fs.writeFileSync(DATA_FILE, JSON.stringify({ latest: latestData, history: dataHistory, dayAccum }));
   } catch (_) {}
 
   res.send('OK');
 });
 
-// --- API endpoints ---
+// ── API endpoints ─────────────────────────────────────────────
 app.get('/api/weather', (_req, res) => {
   if (!latestData) return res.status(503).json({ error: 'Noch keine Daten empfangen' });
   res.json(latestData);
 });
 
 app.get('/api/history', (_req, res) => {
-  // Return last 4 hours (48 readings at 5-min intervals)
-  res.json(dataHistory.slice(-48));
+  res.json(dataHistory.slice(-48)); // last ~4h
 });
 
-// --- Load persisted data on startup ---
+app.get('/api/daily', (req, res) => {
+  const { from, to } = req.query;
+
+  // Build result: saved summaries + today's partial data
+  let result = [...dailySummaries];
+  if (dayAccum && dayAccum.n > 0) {
+    const partial = finalizeAccum(dayAccum);
+    if (partial) {
+      result = result.filter(s => s.date !== partial.date);
+      result.push(partial);
+    }
+  }
+  result.sort((a, b) => a.date.localeCompare(b.date));
+
+  if (from) result = result.filter(d => d.date >= from);
+  if (to)   result = result.filter(d => d.date <= to);
+
+  res.json(result);
+});
+
+// ── Load persisted data on startup ───────────────────────────
 try {
   if (fs.existsSync(DATA_FILE)) {
     const saved = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-    latestData   = saved.latest  || null;
-    dataHistory  = saved.history || [];
-    console.log(`Loaded ${dataHistory.length} historical readings from disk`);
+    latestData  = saved.latest   || null;
+    dataHistory = saved.history  || [];
+    dayAccum    = saved.dayAccum || null;
+    console.log(`Loaded ${dataHistory.length} recent readings from disk`);
   }
-} catch (e) {
-  console.warn('Could not load saved data:', e.message);
-}
+} catch (e) { console.warn('Could not load weather.json:', e.message); }
+
+try {
+  if (fs.existsSync(DAILY_FILE)) {
+    dailySummaries = JSON.parse(fs.readFileSync(DAILY_FILE, 'utf8'));
+    console.log(`Loaded ${dailySummaries.length} daily summaries from disk`);
+  }
+} catch (e) { console.warn('Could not load daily.json:', e.message); }
 
 app.listen(PORT, () => {
   console.log(`Weather dashboard running on http://0.0.0.0:${PORT}`);
