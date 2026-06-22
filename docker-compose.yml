@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  weather:
+    build: ./server
+    container_name: weather-dashboard
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - weather_data:/data
+    environment:
+      - TZ=Europe/Berlin
+
+volumes:
+  weather_data:
