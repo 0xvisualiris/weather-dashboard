@@ -2,11 +2,12 @@ version: '3.8'
 
 services:
   weather:
-    build: ./server
+    # Ersetze DEIN-GITHUB-USERNAME mit deinem GitHub-Benutzernamen (Kleinbuchstaben)
+    image: ghcr.io/0xvisualiris/weather-dashboard:latest
     container_name: weather-dashboard
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "5431:5431"
     volumes:
       - weather_data:/data
     environment:
