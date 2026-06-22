@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wetterstation Gründau</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #080d16;
+      --card:         #111827;
+      --card-border:  rgba(255,255,255,0.07);
+      --text:         #f1f5f9;
+      --muted:        #94a3b8;
+      --orange:       #fb923c;
+      --amber:        #fbbf24;
+      --teal:         #2dd4bf;
+      --blue:         #60a5fa;
+      --cyan:         #22d3ee;
+      --yellow:       #facc15;
+      --purple:       #a78bfa;
+      --green:        #4ade80;
+      --red:          #f87171;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 1.5rem 1rem 2rem;
+    }
+
+    /* ─── Header ─── */
+    header { text-align: center; margin-bottom: 2rem; }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.4rem;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+      animation: blink 2s infinite;
+    }
+    .dot.offline { background: var(--red); animation: none; }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.35; }
+    }
+
+    /* ─── Grid ─── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ─── Cards ─── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 1.4rem 1.5rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 0% 0%, rgba(255,255,255,0.03) 0%, transparent 70%);
+    }
+
+    /* Top accent bar */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 18px 18px 0 0;
+    }
+    .card.outdoor::before   { background: linear-gradient(90deg, #f97316, #fbbf24); }
+    .card.indoor::before    { background: linear-gradient(90deg, #2dd4bf, #60a5fa); }
+    .card.wind::before      { background: linear-gradient(90deg, #60a5fa, #818cf8); }
+    .card.rain::before      { background: linear-gradient(90deg, #22d3ee, #0ea5e9); }
+    .card.lightning::before { background: linear-gradient(90deg, #facc15, #f97316); }
+    .card.solar::before     { background: linear-gradient(90deg, #a78bfa, #f472b6); }
+
+    /* Card header */
+    .ch {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .ch-icon { font-size: 1.1rem; }
+
+    .ch-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    /* Big value */
+    .bv {
+      font-size: 3.6rem;
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .bu {
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: var(--muted);
+    }
+
+    .outdoor .bv { color: var(--orange); }
+    .indoor  .bv { color: var(--teal); }
+
+    /* Sub-lines */
+    .sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.45rem;
+    }
+    .sub b { color: var(--text); }
+
+    /* Humidity bar */
+    .hbar-wrap {
+      margin-top: 0.9rem;
+      height: 5px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .hbar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+      transition: width 0.6s ease;
+    }
+
+    /* ─── Wind card ─── */
+    .wind-layout {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .compass-svg { width: 96px; height: 96px; flex-shrink: 0; }
+
+    .wind-bv {
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: var(--blue);
+      line-height: 1;
+    }
+
+    /* ─── Rain card ─── */
+    .rain-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .rain-row:last-child { border-bottom: none; }
+    .rain-label { color: var(--muted); font-size: 0.85rem; }
+    .rain-val   { font-weight: 600; color: var(--cyan); font-size: 0.95rem; }
+
+    /* ─── Lightning card ─── */
+    .lightning .bv { color: var(--yellow); }
+
+    .l-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(250,204,21,0.1);
+      border: 1px solid rgba(250,204,21,0.25);
+      border-radius: 9999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.8rem;
+      color: var(--yellow);
+      margin-top: 0.8rem;
+    }
+
+    /* ─── UV & Solar card ─── */
+    .uv-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.4rem;
+    }
+    .uv-cat { font-weight: 600; color: var(--purple); }
+
+    .uv-bar {
+      height: 8px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #4ade80 0%, #facc15 40%, #f97316 65%, #ef4444 80%, #8b5cf6 100%);
+      position: relative;
+      margin-bottom: 0.25rem;
+    }
+    .uv-dot {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px; height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #fff;
+      transition: left 0.6s ease;
+    }
+    .uv-scale {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .solar-bv {
+      font-size: 2.6rem;
+      font-weight: 300;
+      color: var(--purple);
+      line-height: 1;
+      margin-top: 1rem;
+    }
+
+    /* ─── Footer ─── */
+    footer {
+      text-align: center;
+      margin-top: 1.75rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 480px) {
+      .bv  { font-size: 2.8rem; }
+      .bu  { font-size: 1.25rem; }
+      .wind-bv { font-size: 2.2rem; }
+      header h1 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⛅ Wetterstation Gründau</h1>
+  <div class="status-row">
+    <div class="dot" id="dot"></div>
+    <span id="lastUpdate">Verbinde…</span>
+  </div>
+</header>
+
+<div class="grid">
+
+  <!-- Außentemperatur -->
+  <div class="card outdoor">
+    <div class="ch"><span class="ch-icon">🌡️</span><span class="ch-title">Außen</span></div>
+    <div class="bv"><span id="outTemp">--</span><span class="bu"> °C</span></div>
+    <div class="sub">Luftfeuchtigkeit: <b id="outHumi">--%</b></div>
+    <div class="hbar-wrap"><div class="hbar-fill" id="outHumiBar" style="width:0%"></div></div>
+  </div>
+
+  <!-- Innentemperatur -->
+  <div class="card indoor">
+    <div class="ch"><span class="ch-icon">🏠</span><span class="ch-title">Innen</span></div>
+    <div class="bv"><span id="inTemp">--</span><span class="bu"> °C</span></div>
+    <div class="sub">Luftfeuchtigkeit: <b id="inHumi">--%</b></div>
+    <div class="hbar-wrap"><div class="hbar-fill" id="inHumiBar" style="width:0%"></div></div>
+  </div>
+
+  <!-- Wind -->
+  <div class="card wind">
+    <div class="ch"><span class="ch-icon">💨</span><span class="ch-title">Wind</span></div>
+    <div class="wind-layout">
+      <svg class="compass-svg" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+        <!-- tick marks -->
+        <g stroke="rgba(255,255,255,0.15)" stroke-width="1">
+          <line x1="50" y1="7"  x2="50" y2="14"/>
+          <line x1="93" y1="50" x2="86" y2="50"/>
+          <line x1="50" y1="93" x2="50" y2="86"/>
+          <line x1="7"  y1="50" x2="14" y2="50"/>
+        </g>
+        <text x="50" y="11"  text-anchor="middle" fill="#94a3b8" font-size="9"  font-family="system-ui" font-weight="600">N</text>
+        <text x="89" y="54"  text-anchor="middle" fill="#94a3b8" font-size="9"  font-family="system-ui">O</text>
+        <text x="50" y="97"  text-anchor="middle" fill="#94a3b8" font-size="9"  font-family="system-ui">S</text>
+        <text x="11" y="54"  text-anchor="middle" fill="#94a3b8" font-size="9"  font-family="system-ui">W</text>
+        <!-- Arrow: points to where wind is GOING -->
+        <g id="windArrow" style="transform-origin:50px 50px; transform:rotate(0deg); transition:transform 0.6s ease">
+          <polygon points="50,13 46,55 50,49 54,55" fill="#60a5fa"/>
+          <polygon points="50,87 46,45 50,49 54,45" fill="rgba(96,165,250,0.25)"/>
+        </g>
+        <circle cx="50" cy="50" r="3.5" fill="#60a5fa"/>
+      </svg>
+
+      <div>
+        <div class="wind-bv"><span id="windSpeed">--</span><span style="font-size:1.1rem;color:var(--muted)"> km/h</span></div>
+        <div class="sub" style="margin-top:0.5rem">Böe: <b id="windGust">--</b> km/h</div>
+        <div class="sub">Richtung: <b id="windDir">--</b></div>
+        <div class="sub">Max. heute: <b id="windMax">--</b> km/h</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Niederschlag -->
+  <div class="card rain">
+    <div class="ch"><span class="ch-icon">🌧️</span><span class="ch-title">Niederschlag</span></div>
+    <div class="rain-row"><span class="rain-label">Aktuelle Rate</span><span class="rain-val"><span id="rainRate">--</span> mm/h</span></div>
+    <div class="rain-row"><span class="rain-label">Ereignis</span><span class="rain-val"><span id="rainEvent">--</span> mm</span></div>
+    <div class="rain-row"><span class="rain-label">Heute</span><span class="rain-val"><span id="rainDaily">--</span> mm</span></div>
+    <div class="rain-row"><span class="rain-label">Diese Woche</span><span class="rain-val"><span id="rainWeekly">--</span> mm</span></div>
+    <div class="rain-row"><span class="rain-label">Dieser Monat</span><span class="rain-val"><span id="rainMonthly">--</span> mm</span></div>
+  </div>
+
+  <!-- Blitz -->
+  <div class="card lightning">
+    <div class="ch"><span class="ch-icon">⚡</span><span class="ch-title">Blitzentladungen</span></div>
+    <div class="bv"><span id="lCount">--</span><span class="bu"> heute</span></div>
+    <div class="sub" style="margin-top:0.6rem">Letzter Einschlag: <b id="lDist">-- km</b></div>
+    <div id="lBadge" class="l-badge" style="display:none">⚡ Zuletzt: <span id="lTime">--</span></div>
+  </div>
+
+  <!-- UV & Solar -->
+  <div class="card solar">
+    <div class="ch"><span class="ch-icon">☀️</span><span class="ch-title">UV & Solarstrahlung</span></div>
+    <div class="uv-label-row">
+      <span style="font-size:0.85rem;color:var(--muted)">UV-Index</span>
+      <span><b id="uvVal" style="color:var(--text)">--</b> <span class="uv-cat" id="uvCat"></span></span>
+    </div>
+    <div class="uv-bar"><div class="uv-dot" id="uvDot" style="left:0%"></div></div>
+    <div class="uv-scale"><span>Niedrig</span><span>Mittel</span><span>Hoch</span><span>Extrem</span></div>
+    <div class="solar-bv"><span id="solarRad">--</span><span style="font-size:1.1rem;color:var(--muted)"> W/m²</span></div>
+    <div class="sub" style="margin-top:0.4rem">Solarstrahlung</div>
+  </div>
+
+</div>
+
+<footer>Gründau · Daten werden alle 30 Sekunden aktualisiert</footer>
+
+<script>
+  const DIR = ['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+
+  function degToDir(d) {
+    if (d == null) return '--';
+    return DIR[Math.round(d / 22.5) % 16];
+  }
+
+  function uvCategory(uv) {
+    if (uv == null) return '';
+    if (uv < 3)  return 'Niedrig';
+    if (uv < 6)  return 'Mittel';
+    if (uv < 8)  return 'Hoch';
+    if (uv < 11) return 'Sehr hoch';
+    return 'Extrem';
+  }
+
+  function fmt(v, dec = 1) {
+    return v != null ? Number(v).toFixed(dec) : '--';
+  }
+
+  function timeAgo(iso) {
+    if (!iso) return '--';
+    const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (s < 60)    return `vor ${s} s`;
+    if (s < 3600)  return `vor ${Math.floor(s / 60)} min`;
+    if (s < 86400) return `vor ${Math.floor(s / 3600)} h`;
+    return new Date(iso).toLocaleString('de-DE');
+  }
+
+  function set(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  async function refresh() {
+    const dot  = document.getElementById('dot');
+    const info = document.getElementById('lastUpdate');
+    try {
+      const res = await fetch('/api/weather');
+      if (!res.ok) throw new Error('no data');
+      const d = await res.json();
+
+      dot.className = 'dot';
+      info.textContent = 'Zuletzt: ' + new Date(d.timestamp).toLocaleTimeString('de-DE');
+
+      // Outdoor
+      set('outTemp', fmt(d.outdoor.temp));
+      set('outHumi', (d.outdoor.humidity ?? '--') + '%');
+      document.getElementById('outHumiBar').style.width = (d.outdoor.humidity ?? 0) + '%';
+
+      // Indoor
+      set('inTemp', fmt(d.indoor.temp));
+      set('inHumi', (d.indoor.humidity ?? '--') + '%');
+      document.getElementById('inHumiBar').style.width = (d.indoor.humidity ?? 0) + '%';
+
+      // Wind
+      set('windSpeed', fmt(d.wind.speed));
+      set('windGust',  fmt(d.wind.gust));
+      set('windMax',   fmt(d.wind.maxDailyGust));
+      set('windDir',   degToDir(d.wind.direction));
+      if (d.wind.direction != null) {
+        document.getElementById('windArrow').style.transform = `rotate(${d.wind.direction}deg)`;
+      }
+
+      // Rain
+      set('rainRate',    fmt(d.rain.rate));
+      set('rainEvent',   fmt(d.rain.event));
+      set('rainDaily',   fmt(d.rain.daily));
+      set('rainWeekly',  fmt(d.rain.weekly));
+      set('rainMonthly', fmt(d.rain.monthly));
+
+      // Lightning
+      set('lCount', d.lightning.count ?? '--');
+      set('lDist',  d.lightning.distance != null ? d.lightning.distance + ' km' : '-- km');
+      const badge = document.getElementById('lBadge');
+      if (d.lightning.lastTime) {
+        badge.style.display = 'inline-flex';
+        set('lTime', timeAgo(d.lightning.lastTime));
+      } else {
+        badge.style.display = 'none';
+      }
+
+      // UV
+      const uv = d.solar.uv;
+      set('uvVal', uv != null ? Number(uv).toFixed(1) : '--');
+      set('uvCat', uvCategory(uv));
+      document.getElementById('uvDot').style.left = Math.min((uv ?? 0) / 12 * 100, 100) + '%';
+      set('solarRad', d.solar.radiation ?? '--');
+
+    } catch (_) {
+      dot.className = 'dot offline';
+      info.textContent = 'Keine Verbindung zur Station';
+    }
+  }
+
+  refresh();
+  setInterval(refresh, 30000);
+</script>
+</body>
+</html>
