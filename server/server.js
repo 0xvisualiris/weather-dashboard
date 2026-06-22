@@ -26,18 +26,19 @@ const toInt = v    => v    != null ? parseInt(v, 10) : null;
 
 // ── Date helper (Europe/Berlin) ───────────────────────────────
 function getDateStr() {
-  return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' }); // YYYY-MM-DD
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' });
 }
 
 // ── Daily accumulator ─────────────────────────────────────────
 function newAccum(date) {
-  return { date, n: 0,
+  return {
+    date, n: 0,
     tempSum: 0, tempMin: null, tempMax: null,
     humiSum: 0,
     windSum: 0, windMax: 0,
     rainMax: 0,
-    uvSum:   0,
-    solarSum: 0,
+    uvSum: 0,
+    solarSum: 0, solarMax: 0,
     lightning: 0,
   };
 }
@@ -49,11 +50,11 @@ function addToAccum(a, d) {
     a.tempMin  = a.tempMin === null ? d.outdoor.temp : Math.min(a.tempMin, d.outdoor.temp);
     a.tempMax  = a.tempMax === null ? d.outdoor.temp : Math.max(a.tempMax, d.outdoor.temp);
   }
-  if (d.outdoor.humidity  != null) a.humiSum   += d.outdoor.humidity;
-  if (d.wind.speed        != null) { a.windSum  += d.wind.speed; a.windMax = Math.max(a.windMax, d.wind.speed); }
-  if (d.rain.daily        != null) a.rainMax    = Math.max(a.rainMax, d.rain.daily);
-  if (d.solar.uv          != null) a.uvSum      += d.solar.uv;
-  if (d.solar.radiation   != null) a.solarSum   += d.solar.radiation;
+  if (d.outdoor.humidity  != null) a.humiSum  += d.outdoor.humidity;
+  if (d.wind.speed        != null) { a.windSum += d.wind.speed; a.windMax = Math.max(a.windMax, d.wind.speed); }
+  if (d.rain.daily        != null) a.rainMax   = Math.max(a.rainMax, d.rain.daily);
+  if (d.solar.uv          != null) a.uvSum     += d.solar.uv;
+  if (d.solar.radiation   != null) { a.solarSum += d.solar.radiation; a.solarMax = Math.max(a.solarMax, d.solar.radiation); }
   if (d.lightning.count   != null) a.lightning  = Math.max(a.lightning, d.lightning.count);
 }
 
@@ -70,6 +71,7 @@ function finalizeAccum(a) {
     rainDaily:     a.rainMax,
     uvIndex:       +(a.uvSum    / a.n).toFixed(1),
     solarRad:      Math.round(a.solarSum / a.n),
+    solarRadMax:   a.solarMax,
     lightningCount: a.lightning,
   };
 }
@@ -79,17 +81,13 @@ function saveDailySummaries() {
 }
 
 // ── Receive push from Ecowitt station ────────────────────────
-// Station config: Protocol=Ecowitt, Path=/data/report/, Port=3000
 app.post('/data/report/', (req, res) => {
   const r = req.body;
   const today = getDateStr();
 
   latestData = {
     timestamp: new Date().toISOString(),
-    outdoor: {
-      temp:     toC(r.tempf),
-      humidity: toInt(r.humidity),
-    },
+    outdoor: { temp: toC(r.tempf), humidity: toInt(r.humidity) },
     wind: {
       speed:        toKmh(r.windspeedmph),
       gust:         toKmh(r.windgustmph),
@@ -116,7 +114,7 @@ app.post('/data/report/', (req, res) => {
     },
   };
 
-  // ── Daily accumulator: roll over at midnight ──
+  // Daily accumulator
   if (!dayAccum) {
     dayAccum = newAccum(today);
   } else if (dayAccum.date !== today) {
@@ -131,7 +129,6 @@ app.post('/data/report/', (req, res) => {
   }
   addToAccum(dayAccum, latestData);
 
-  // ── Short-term history ──
   dataHistory.push({ ...latestData });
   if (dataHistory.length > MAX_HISTORY) dataHistory.shift();
 
@@ -145,17 +142,36 @@ app.post('/data/report/', (req, res) => {
 // ── API endpoints ─────────────────────────────────────────────
 app.get('/api/weather', (_req, res) => {
   if (!latestData) return res.status(503).json({ error: 'Noch keine Daten empfangen' });
-  res.json(latestData);
+  res.json({
+    ...latestData,
+    today: {
+      tempMin:   dayAccum?.tempMin   ?? null,
+      tempMax:   dayAccum?.tempMax   ?? null,
+      solarMax:  dayAccum?.solarMax  ?? null,
+      rainTotal: dayAccum?.rainMax   ?? null,
+    },
+  });
+});
+
+// Lightweight endpoint for sparklines (last 24h, minimal payload)
+app.get('/api/sparklines', (_req, res) => {
+  res.json(dataHistory.map(d => ({
+    t: d.outdoor.temp,
+    h: d.outdoor.humidity,
+    w: d.wind.speed,
+    r: d.rain.rate,
+    u: d.solar.uv,
+    s: d.solar.radiation,
+    l: d.lightning.count,
+  })));
 });
 
 app.get('/api/history', (_req, res) => {
-  res.json(dataHistory.slice(-48)); // last ~4h
+  res.json(dataHistory.slice(-48));
 });
 
 app.get('/api/daily', (req, res) => {
   const { from, to } = req.query;
-
-  // Build result: saved summaries + today's partial data
   let result = [...dailySummaries];
   if (dayAccum && dayAccum.n > 0) {
     const partial = finalizeAccum(dayAccum);
@@ -165,10 +181,8 @@ app.get('/api/daily', (req, res) => {
     }
   }
   result.sort((a, b) => a.date.localeCompare(b.date));
-
   if (from) result = result.filter(d => d.date >= from);
   if (to)   result = result.filter(d => d.date <= to);
-
   res.json(result);
 });
 
