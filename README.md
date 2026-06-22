@@ -1,43 +1,30 @@
-# Wetterstation Gründau – Self-hosted Dashboard
+# Wetterstation Gründau – v3
 
-## Änderungen in dieser Version
-- Indoor-Karte entfernt
-- Kompass im Wind-Widget wiederhergestellt
-- UV-Farbbalken wiederhergestellt
-- Verlaufs-Graphen pro Karte (Klick auf das Icon oben rechts)
-- Datepicker mit Schnellauswahl (7 Tage / 30 Tage / 3 Monate / Alles)
-- Tägliche Zusammenfassungen werden automatisch gespeichert (`/data/daily.json`)
-- Neuer API-Endpunkt: `GET /api/daily?from=YYYY-MM-DD&to=YYYY-MM-DD`
+## Neu in dieser Version
+- **Hero-Banner** mit Wetterbedingung, großer Temp, Gefühlter Temp, Min/Max, Taupunkt, Sonnenauf-/-untergang
+- **Mini-Sparklines** (24h Trendlinie) am unteren Rand jeder Karte
+- **Beaufort-Skala** auf der Wind-Karte
+- **Regenintensitäts-Badge** (Kein Regen / Leichter / Mäßig / Starkregen)
+- **Stale-Data-Banner** erscheint automatisch wenn Station > 5 Min. keine Daten sendet
+- **Solar-Tagesmax** auf der UV-Karte
+- Neuer API-Endpunkt: `GET /api/sparklines` (lightweight, letzte 24h)
+- `today.tempMin`, `today.tempMax`, `today.solarMax` in `GET /api/weather`
 
-## Stack starten
+## Deployment
 
 ```bash
-docker compose pull
-docker compose up -d
+# Auf TrueNAS (nach Git Push → GitHub Actions baut Image automatisch)
+cd /mnt/tank/docker/weather-dashboard
+docker compose pull && docker compose up -d
 ```
 
-## Wetterstation konfigurieren (WS View Plus App)
+## Alle API-Endpunkte
 
-| Feld              | Wert                     |
-|-------------------|--------------------------|
-| Protocol Type     | **Ecowitt**              |
-| Server IP / Host  | `<deine Server-IP>`      |
-| Path              | `/data/report/`          |
-| Port              | `3000`                   |
-| Upload interval   | `60` (Sekunden)          |
-
-## API-Endpunkte
-
-| Endpunkt                         | Beschreibung                            |
-|----------------------------------|-----------------------------------------|
-| `GET /`                          | Dashboard (HTML)                        |
-| `GET /api/weather`               | Aktuellster Datensatz (JSON)            |
-| `GET /api/history`               | Letzte ~4 Stunden (JSON-Array)          |
-| `GET /api/daily`                 | Alle Tageszusammenfassungen             |
-| `GET /api/daily?from=&to=`       | Tagesdaten gefiltert nach Datum         |
-| `POST /data/report/`             | Ecowitt Push-Empfänger                  |
-
-## Datenspeicherung
-
-- `/data/weather.json` – aktueller Messwert + letzte 24h (Docker-Volume)
-- `/data/daily.json`   – Tagesdurchschnitte seit erstem Empfang (Docker-Volume)
+| Endpunkt                       | Beschreibung                             |
+|--------------------------------|------------------------------------------|
+| `GET /`                        | Dashboard                                |
+| `GET /api/weather`             | Aktuell + today Min/Max/SolarMax         |
+| `GET /api/sparklines`          | Letzte 24h, minimale Payload             |
+| `GET /api/history`             | Letzte ~4h (detailliert)                 |
+| `GET /api/daily?from=&to=`     | Tagesdurchschnitte gefiltert nach Datum  |
+| `POST /data/report/`           | Ecowitt Push-Empfänger                   |
