@@ -24,39 +24,69 @@
     }
 
     /* ── Header ── */
-    header { text-align: center; margin-bottom: 2rem; }
-
+    header { text-align: center; margin-bottom: 1.25rem; }
     header h1 {
       font-size: 1.8rem; font-weight: 700;
       background: linear-gradient(135deg, #60a5fa, #a78bfa);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       margin-bottom: 0.4rem;
     }
-
     .status-row {
       display: flex; align-items: center; justify-content: center;
       gap: 0.5rem; color: var(--muted); font-size: 0.85rem;
     }
-
-    .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #4ade80; flex-shrink: 0; animation: blink 2s infinite;
-    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; flex-shrink: 0; animation: blink 2s infinite; }
     .dot.offline { background: #f87171; animation: none; }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
+    /* ── Hero banner ── */
+    #hero {
+      position: relative; border-radius: 16px; padding: 1.4rem 1.5rem;
+      margin-bottom: 1rem; overflow: hidden; background: #0d1321;
+      max-width: 1100px; margin-left: auto; margin-right: auto; margin-bottom: 1rem;
+    }
+    #heroGlow {
+      position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
+      width: 320px; height: 260px; border-radius: 50%; pointer-events: none;
+      transition: background 1s ease;
+    }
+    .hero-body { position: relative; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+    .hero-left {}
+    .condition-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 9999px; padding: 4px 12px; font-size: 0.78rem; color: var(--muted);
+      margin-bottom: 0.65rem;
+    }
+    .hero-temp {
+      font-size: 4rem; font-weight: 200; line-height: 1; letter-spacing: -0.03em; color: var(--text);
+    }
+    .hero-temp span { font-size: 2rem; color: var(--muted); }
+    .hero-sub { font-size: 0.82rem; color: var(--muted); margin-top: 0.4rem; }
+    .hero-sub b { color: var(--text); }
+    .hero-right { text-align: right; flex-shrink: 0; }
+    .sun-row { font-size: 0.76rem; color: var(--muted); margin-bottom: 0.3rem; }
+    .sun-row b { color: var(--text); }
+
+    /* ── Stale data banner ── */
+    #staleBanner {
+      display: none; align-items: center; gap: 10px;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 12px; padding: 0.7rem 1rem; margin-bottom: 1rem;
+      font-size: 0.82rem; max-width: 1100px; margin-left: auto; margin-right: auto;
+    }
+    #staleBanner.visible { display: flex; }
+
     /* ── Grid ── */
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
       gap: 1rem; max-width: 1100px; margin: 0 auto;
     }
 
     /* ── Cards ── */
     .card {
       background: var(--card); border: 1px solid var(--border);
-      border-radius: 18px; padding: 1.4rem 1.5rem 1.5rem;
-      position: relative; overflow: hidden;
+      border-radius: 18px; padding: 1.3rem 1.4rem 0; position: relative; overflow: hidden;
     }
     .card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0;
@@ -68,171 +98,93 @@
     .card.lightning::before { background: linear-gradient(90deg, #facc15, #f97316); }
     .card.solar::before     { background: linear-gradient(90deg, #a78bfa, #f472b6); }
 
-    .ch {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 1.1rem;
-    }
+    .ch { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
     .ch-left { display: flex; align-items: center; gap: 0.5rem; }
     .ch-icon { font-size: 1.1rem; }
-    .ch-title {
-      font-size: 0.75rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted);
+    .ch-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+
+    .ch-right { display: flex; align-items: center; gap: 6px; }
+
+    .badge {
+      display: inline-flex; align-items: center; border-radius: 9999px;
+      padding: 2px 9px; font-size: 0.72rem; font-weight: 600;
     }
 
     .chart-btn {
       background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
-      color: var(--muted); border-radius: 8px; padding: 5px 9px;
-      cursor: pointer; display: flex; align-items: center; gap: 4px;
-      transition: background 0.15s;
+      color: var(--muted); border-radius: 8px; padding: 5px 8px;
+      cursor: pointer; display: flex; align-items: center; transition: background 0.15s;
     }
     .chart-btn:hover { background: rgba(255,255,255,0.14); color: var(--text); }
 
-    /* Big value */
-    .bv { font-size: 3.6rem; font-weight: 300; line-height: 1; letter-spacing: -0.02em; }
-    .bu { font-size: 1.6rem; font-weight: 300; color: var(--muted); }
+    .bv { font-size: 3.4rem; font-weight: 300; line-height: 1; letter-spacing: -0.02em; }
+    .bu { font-size: 1.5rem; font-weight: 300; color: var(--muted); }
     .outdoor .bv { color: #fb923c; }
+    .lightning .bv { color: #facc15; }
 
-    .sub { font-size: 0.85rem; color: var(--muted); margin-top: 0.45rem; }
+    .sub { font-size: 0.82rem; color: var(--muted); margin-top: 0.38rem; }
     .sub b { color: var(--text); }
 
-    .hbar-wrap {
-      margin-top: 0.9rem; height: 5px;
-      background: rgba(255,255,255,0.07); border-radius: 9999px; overflow: hidden;
-    }
-    .hbar-fill {
-      height: 100%; border-radius: 9999px;
-      background: linear-gradient(90deg, #60a5fa, #a78bfa); transition: width 0.6s ease;
-    }
+    .hbar-wrap { margin-top: 0.75rem; height: 5px; background: rgba(255,255,255,0.07); border-radius: 9999px; overflow: hidden; }
+    .hbar-fill { height: 100%; border-radius: 9999px; background: linear-gradient(90deg, #60a5fa, #a78bfa); transition: width 0.6s ease; }
 
-    /* ── Wind ── */
-    .wind-layout { display: flex; align-items: center; gap: 1.25rem; }
-    .compass-svg { width: 96px; height: 96px; flex-shrink: 0; }
-    .wind-bv { font-size: 2.8rem; font-weight: 300; color: #60a5fa; line-height: 1; }
+    /* Wind */
+    .wind-layout { display: flex; align-items: center; gap: 1.1rem; }
+    .compass-svg { width: 90px; height: 90px; flex-shrink: 0; }
+    .wind-bv { font-size: 2.6rem; font-weight: 300; color: #60a5fa; line-height: 1; }
 
-    /* ── Rain ── */
-    .rain-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
+    /* Rain */
+    .rain-row { display: flex; justify-content: space-between; align-items: center; padding: 0.42rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
     .rain-row:last-child { border-bottom: none; }
-    .rain-label { color: var(--muted); font-size: 0.85rem; }
-    .rain-val   { font-weight: 600; color: #22d3ee; font-size: 0.95rem; }
+    .rain-label { color: var(--muted); }
+    .rain-val   { font-weight: 600; color: #22d3ee; }
 
-    /* ── Lightning ── */
-    .lightning .bv { color: #facc15; }
-    .l-badge {
-      display: inline-flex; align-items: center; gap: 0.35rem;
-      background: rgba(250,204,21,0.1); border: 1px solid rgba(250,204,21,0.25);
-      border-radius: 9999px; padding: 0.25rem 0.75rem;
-      font-size: 0.8rem; color: #facc15; margin-top: 0.8rem;
-    }
+    /* Lightning */
+    .l-badge { display: inline-flex; align-items: center; gap: 0.35rem; background: rgba(250,204,21,0.1); border: 1px solid rgba(250,204,21,0.25); border-radius: 9999px; padding: 0.25rem 0.75rem; font-size: 0.8rem; color: #facc15; margin-top: 0.7rem; }
 
-    /* ── UV / Solar ── */
-    .uv-label-row {
-      display: flex; justify-content: space-between; align-items: baseline;
-      margin-bottom: 0.4rem;
-    }
+    /* UV/Solar */
+    .uv-label-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem; }
     .uv-cat { font-weight: 600; color: #a78bfa; }
-    .uv-bar {
-      height: 8px; border-radius: 9999px; position: relative;
-      background: linear-gradient(90deg,#4ade80 0%,#facc15 40%,#f97316 65%,#ef4444 80%,#8b5cf6 100%);
-      margin-bottom: 0.25rem;
-    }
-    .uv-dot {
-      position: absolute; top: 50%; transform: translate(-50%,-50%);
-      width: 14px; height: 14px; background: #fff; border-radius: 50%;
-      box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #fff; transition: left 0.6s ease;
-    }
-    .uv-scale {
-      display: flex; justify-content: space-between;
-      font-size: 0.7rem; color: var(--muted);
-    }
-    .solar-bv { font-size: 2.6rem; font-weight: 300; color: #a78bfa; line-height: 1; margin-top: 1rem; }
+    .uv-bar { height: 8px; border-radius: 9999px; position: relative; background: linear-gradient(90deg,#4ade80 0%,#facc15 40%,#f97316 65%,#ef4444 80%,#8b5cf6 100%); margin-bottom: 0.25rem; }
+    .uv-dot { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px; background: #fff; border-radius: 50%; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #fff; transition: left 0.6s ease; }
+    .uv-scale { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--muted); }
+    .solar-bv { font-size: 2.5rem; font-weight: 300; color: #a78bfa; line-height: 1; margin-top: 0.85rem; }
+
+    /* Sparkline containers — flush to card edges at bottom */
+    .spark { margin: 0.65rem -1.4rem -1px; line-height: 0; }
 
     /* ── Modal ── */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(8,13,22,0.92); z-index: 100;
-      padding: 1.5rem 1rem; overflow-y: auto;
-      justify-content: center; align-items: flex-start;
-    }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(8,13,22,0.92); z-index: 100; padding: 1.5rem 1rem; overflow-y: auto; justify-content: center; align-items: flex-start; }
     .modal-overlay.open { display: flex; }
-
-    .modal-box {
-      background: var(--card); border-radius: 16px;
-      padding: 1.5rem; width: 100%; max-width: 640px;
-      border: 1px solid rgba(255,255,255,0.1); margin-top: 1.5rem;
-    }
-
-    .modal-header {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      margin-bottom: 1.25rem;
-    }
+    .modal-box { background: var(--card); border-radius: 16px; padding: 1.5rem; width: 100%; max-width: 640px; border: 1px solid rgba(255,255,255,0.1); margin-top: 1.5rem; }
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; }
     .modal-title    { font-size: 1rem; font-weight: 600; color: var(--text); }
     .modal-subtitle { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
-
-    .close-btn {
-      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
-      color: var(--muted); border-radius: 8px; padding: 6px 12px;
-      cursor: pointer; display: flex; align-items: center; gap: 5px;
-      font-size: 0.82rem; white-space: nowrap; margin-left: 1rem;
-    }
+    .close-btn { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: var(--muted); border-radius: 8px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.82rem; white-space: nowrap; margin-left: 1rem; }
     .close-btn:hover { background: rgba(255,255,255,0.12); color: var(--text); }
-
-    .date-row {
-      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-      background: rgba(255,255,255,0.03); border-radius: 10px;
-      padding: 10px 12px; border: 1px solid rgba(255,255,255,0.06);
-      margin-bottom: 0.85rem;
-    }
+    .date-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 12px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 0.85rem; }
     .date-row label { font-size: 0.78rem; color: var(--muted); }
-
-    input[type="date"] {
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
-      color: var(--text); border-radius: 8px; padding: 5px 9px;
-      font-size: 0.8rem; cursor: pointer; color-scheme: dark; font-family: inherit;
-    }
+    input[type="date"] { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--text); border-radius: 8px; padding: 5px 9px; font-size: 0.8rem; cursor: pointer; color-scheme: dark; font-family: inherit; }
     input[type="date"]:focus { outline: none; border-color: rgba(255,255,255,0.3); }
-
-    .apply-btn {
-      background: rgba(96,165,250,0.15); border: 1px solid rgba(96,165,250,0.35);
-      color: #60a5fa; border-radius: 8px; padding: 5px 14px;
-      cursor: pointer; font-size: 0.8rem; font-family: inherit;
-    }
+    .apply-btn { background: rgba(96,165,250,0.15); border: 1px solid rgba(96,165,250,0.35); color: #60a5fa; border-radius: 8px; padding: 5px 14px; cursor: pointer; font-size: 0.8rem; font-family: inherit; }
     .apply-btn:hover { background: rgba(96,165,250,0.25); }
-
     .quick-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
-    .quick-btn {
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-      color: var(--muted); border-radius: 6px; padding: 4px 12px;
-      cursor: pointer; font-size: 0.75rem; font-family: inherit;
-    }
+    .quick-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--muted); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 0.75rem; font-family: inherit; }
     .quick-btn:hover  { background: rgba(255,255,255,0.1); color: var(--text); }
     .quick-btn.active { background: rgba(255,255,255,0.12); color: var(--text); border-color: rgba(255,255,255,0.3); }
-
     .chart-wrap { position: relative; height: 250px; }
-
-    .no-data {
-      display: flex; align-items: center; justify-content: center;
-      height: 250px; color: var(--muted); font-size: 0.875rem; text-align: center;
-    }
-
-    .chart-legend {
-      display: flex; gap: 16px; margin-top: 0.85rem;
-      font-size: 0.75rem; color: var(--muted); flex-wrap: wrap;
-    }
+    .no-data { display: flex; align-items: center; justify-content: center; height: 250px; color: var(--muted); font-size: 0.875rem; text-align: center; }
+    .chart-legend { display: flex; gap: 16px; margin-top: 0.85rem; font-size: 0.75rem; color: var(--muted); flex-wrap: wrap; }
     .legend-item { display: flex; align-items: center; gap: 5px; }
     .legend-dot  { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
 
     /* ── Footer ── */
-    footer {
-      text-align: center; margin-top: 2rem;
-      color: var(--muted); font-size: 0.75rem; opacity: 0.7;
-    }
+    footer { text-align: center; margin-top: 2rem; color: var(--muted); font-size: 0.75rem; opacity: 0.7; }
 
     @media (max-width: 480px) {
       .bv { font-size: 2.8rem; } .bu { font-size: 1.25rem; }
       .wind-bv { font-size: 2.2rem; } header h1 { font-size: 1.4rem; }
+      .hero-temp { font-size: 3rem; } .hero-temp span { font-size: 1.5rem; }
     }
   </style>
 </head>
@@ -246,43 +198,76 @@
   </div>
 </header>
 
+<!-- ── Hero banner ── -->
+<div id="hero">
+  <div id="heroGlow"></div>
+  <div class="hero-body">
+    <div class="hero-left">
+      <div class="condition-badge"><span id="condIcon">⏳</span><span id="condText">Lade…</span></div>
+      <div class="hero-temp"><span id="heroTemp">--</span><span>°C</span></div>
+      <div class="hero-sub" style="margin-top:0.45rem">
+        Gefühlt <b id="heroFeels">--</b>°C &nbsp;·&nbsp;
+        Min <b id="heroMin" style="color:#60a5fa">--</b>° &nbsp;/&nbsp;
+        Max <b id="heroMax" style="color:#f97316">--</b>°
+      </div>
+      <div class="hero-sub">
+        Luftfeuchtigkeit <b id="heroHumi">--%</b> &nbsp;·&nbsp;
+        Taupunkt <b id="heroDew">--</b>°C
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="sun-row">🌅 <b id="sunrise">--:--</b></div>
+      <div class="sun-row">🌇 <b id="sunset">--:--</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Stale data banner ── -->
+<div id="staleBanner" style="margin-bottom:1rem">
+  <span>⚠️</span>
+  <div style="color:var(--muted)">
+    <b style="color:#f87171">Station antwortet nicht</b> · Letztes Signal vor
+    <b id="staleMin" style="color:#f87171">?</b> Minuten · Daten möglicherweise veraltet
+  </div>
+</div>
+
 <div class="grid">
 
   <!-- Außentemperatur -->
   <div class="card outdoor">
     <div class="ch">
-      <div class="ch-left">
-        <span class="ch-icon">🌡️</span>
-        <span class="ch-title">Außen</span>
+      <div class="ch-left"><span class="ch-icon">🌡️</span><span class="ch-title">Außen</span></div>
+      <div class="ch-right">
+        <button class="chart-btn" onclick="openChart('temp')" title="Verlauf" aria-label="Verlauf anzeigen">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </button>
       </div>
-      <button class="chart-btn" onclick="openChart('temp')" title="Temperatur & Luftfeuchtigkeit – Verlauf" aria-label="Verlauf anzeigen">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </button>
     </div>
     <div class="bv"><span id="outTemp">--</span><span class="bu"> °C</span></div>
-    <div class="sub">Luftfeuchtigkeit: <b id="outHumi">--%</b></div>
+    <div class="sub">Gefühlt <b id="feelsLike">--</b>°C &nbsp;·&nbsp; Taupunkt <b id="dewPoint">--</b>°C</div>
+    <div class="sub">Min <b id="todayMin" style="color:#60a5fa">--</b>° &nbsp;/&nbsp; Max <b id="todayMax" style="color:#f97316">--</b>° heute</div>
     <div class="hbar-wrap"><div class="hbar-fill" id="outHumiBar" style="width:0%"></div></div>
+    <div class="sub" style="margin-top:0.3rem">Luftfeuchtigkeit <b id="outHumi">--%</b></div>
+    <div class="spark" id="spark-temp"></div>
   </div>
 
   <!-- Wind -->
   <div class="card wind">
     <div class="ch">
-      <div class="ch-left">
-        <span class="ch-icon">💨</span>
-        <span class="ch-title">Wind</span>
+      <div class="ch-left"><span class="ch-icon">💨</span><span class="ch-title">Wind</span></div>
+      <div class="ch-right">
+        <span class="badge" id="bftBadge" style="background:rgba(96,165,250,0.1);color:#60a5fa;border:1px solid rgba(96,165,250,0.22)">Bft --</span>
+        <button class="chart-btn" onclick="openChart('wind')" title="Verlauf" aria-label="Verlauf anzeigen">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </button>
       </div>
-      <button class="chart-btn" onclick="openChart('wind')" title="Windverlauf" aria-label="Verlauf anzeigen">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </button>
     </div>
     <div class="wind-layout">
       <svg class="compass-svg" viewBox="0 0 100 100" aria-hidden="true">
         <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
         <g stroke="rgba(255,255,255,0.15)" stroke-width="1">
-          <line x1="50" y1="7"  x2="50" y2="14"/>
-          <line x1="93" y1="50" x2="86" y2="50"/>
-          <line x1="50" y1="93" x2="50" y2="86"/>
-          <line x1="7"  y1="50" x2="14" y2="50"/>
+          <line x1="50" y1="7"  x2="50" y2="14"/><line x1="93" y1="50" x2="86" y2="50"/>
+          <line x1="50" y1="93" x2="50" y2="86"/><line x1="7"  y1="50" x2="14" y2="50"/>
         </g>
         <text x="50" y="11"  text-anchor="middle" fill="#94a3b8" font-size="9" font-family="system-ui" font-weight="600">N</text>
         <text x="89" y="54"  text-anchor="middle" fill="#94a3b8" font-size="9" font-family="system-ui">O</text>
@@ -296,66 +281,69 @@
       </svg>
       <div>
         <div class="wind-bv"><span id="windSpeed">--</span><span style="font-size:1.1rem;color:var(--muted)"> km/h</span></div>
-        <div class="sub" style="margin-top:0.5rem">Böe: <b id="windGust">--</b> km/h</div>
+        <div class="sub" id="bftName" style="margin-top:0.4rem; color:#60a5fa">--</div>
+        <div class="sub">Böe: <b id="windGust">--</b> km/h</div>
         <div class="sub">Richtung: <b id="windDir">--</b></div>
         <div class="sub">Max. heute: <b id="windMax">--</b> km/h</div>
       </div>
     </div>
+    <div class="spark" id="spark-wind"></div>
   </div>
 
   <!-- Niederschlag -->
   <div class="card rain">
     <div class="ch">
-      <div class="ch-left">
-        <span class="ch-icon">🌧️</span>
-        <span class="ch-title">Niederschlag</span>
+      <div class="ch-left"><span class="ch-icon">🌧️</span><span class="ch-title">Niederschlag</span></div>
+      <div class="ch-right">
+        <span class="badge" id="rainBadge">--</span>
+        <button class="chart-btn" onclick="openChart('rain')" title="Verlauf" aria-label="Verlauf anzeigen">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </button>
       </div>
-      <button class="chart-btn" onclick="openChart('rain')" title="Niederschlagsverlauf" aria-label="Verlauf anzeigen">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </button>
     </div>
     <div class="rain-row"><span class="rain-label">Aktuelle Rate</span><span class="rain-val"><span id="rainRate">--</span> mm/h</span></div>
     <div class="rain-row"><span class="rain-label">Ereignis</span><span class="rain-val"><span id="rainEvent">--</span> mm</span></div>
     <div class="rain-row"><span class="rain-label">Heute</span><span class="rain-val"><span id="rainDaily">--</span> mm</span></div>
     <div class="rain-row"><span class="rain-label">Diese Woche</span><span class="rain-val"><span id="rainWeekly">--</span> mm</span></div>
     <div class="rain-row"><span class="rain-label">Dieser Monat</span><span class="rain-val"><span id="rainMonthly">--</span> mm</span></div>
+    <div class="spark" id="spark-rain"></div>
   </div>
 
   <!-- Blitzentladungen -->
   <div class="card lightning">
     <div class="ch">
-      <div class="ch-left">
-        <span class="ch-icon">⚡</span>
-        <span class="ch-title">Blitzentladungen</span>
+      <div class="ch-left"><span class="ch-icon">⚡</span><span class="ch-title">Blitzentladungen</span></div>
+      <div class="ch-right">
+        <button class="chart-btn" onclick="openChart('lightning')" title="Verlauf" aria-label="Verlauf anzeigen">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </button>
       </div>
-      <button class="chart-btn" onclick="openChart('lightning')" title="Blizverlauf" aria-label="Verlauf anzeigen">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </button>
     </div>
     <div class="bv"><span id="lCount">--</span><span class="bu"> heute</span></div>
-    <div class="sub" style="margin-top:0.6rem">Letzter Einschlag: <b id="lDist">-- km</b></div>
+    <div class="sub" style="margin-top:0.5rem">Letzter Einschlag: <b id="lDist">-- km</b></div>
     <div id="lBadge" class="l-badge" style="display:none">⚡ Zuletzt: <span id="lTime">--</span></div>
+    <div class="spark" id="spark-lightning"></div>
   </div>
 
   <!-- UV & Solarstrahlung -->
   <div class="card solar">
     <div class="ch">
-      <div class="ch-left">
-        <span class="ch-icon">☀️</span>
-        <span class="ch-title">UV & Solarstrahlung</span>
+      <div class="ch-left"><span class="ch-icon">☀️</span><span class="ch-title">UV & Solarstrahlung</span></div>
+      <div class="ch-right">
+        <button class="chart-btn" onclick="openChart('uv')" title="Verlauf" aria-label="Verlauf anzeigen">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </button>
       </div>
-      <button class="chart-btn" onclick="openChart('uv')" title="UV & Solar – Verlauf" aria-label="Verlauf anzeigen">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </button>
     </div>
     <div class="uv-label-row">
-      <span style="font-size:0.85rem;color:var(--muted)">UV-Index</span>
-      <span><b id="uvVal" style="color:var(--text)">--</b> <span class="uv-cat" id="uvCat"></span></span>
+      <span style="font-size:0.82rem;color:var(--muted)">UV-Index</span>
+      <span><b id="uvVal" style="color:var(--text)">--</b> <span id="uvCat" style="font-weight:600;color:#a78bfa"></span></span>
     </div>
     <div class="uv-bar"><div class="uv-dot" id="uvDot" style="left:0%"></div></div>
     <div class="uv-scale"><span>Niedrig</span><span>Mittel</span><span>Hoch</span><span>Extrem</span></div>
     <div class="solar-bv"><span id="solarRad">--</span><span style="font-size:1.1rem;color:var(--muted)"> W/m²</span></div>
-    <div class="sub" style="margin-top:0.4rem">Solarstrahlung</div>
+    <div class="sub" style="margin-top:0.3rem">Solarstrahlung &nbsp;·&nbsp; Tagesmax <b id="solarMax">--</b> W/m²</div>
+    <div class="spark" id="spark-solar"></div>
   </div>
 
 </div>
@@ -363,7 +351,6 @@
 <!-- ── History modal ── -->
 <div class="modal-overlay" id="chartModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-box">
-
     <div class="modal-header">
       <div>
         <div class="modal-title" id="modalTitle">--</div>
@@ -374,29 +361,25 @@
         Schließen
       </button>
     </div>
-
     <div class="date-row">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <label for="dateFrom">Von</label>
       <input type="date" id="dateFrom">
       <label for="dateTo">Bis</label>
       <input type="date" id="dateTo">
       <button class="apply-btn" onclick="applyDateRange()">Anzeigen</button>
     </div>
-
     <div class="quick-row">
       <button class="quick-btn" id="q7"   onclick="setQuick(7)">7 Tage</button>
       <button class="quick-btn" id="q30"  onclick="setQuick(30)">30 Tage</button>
       <button class="quick-btn" id="q90"  onclick="setQuick(90)">3 Monate</button>
       <button class="quick-btn" id="qall" onclick="setQuick(0)">Alles</button>
     </div>
-
     <div class="chart-wrap">
-      <canvas id="histChart" role="img" aria-label="Historische Wetterdaten im gewählten Zeitraum">Verlaufsdaten im gewählten Zeitraum.</canvas>
-      <div class="no-data" id="noDataMsg" style="display:none">Keine Daten für diesen Zeitraum.<br>Der Server sammelt Tagesdaten ab dem ersten Empfang.</div>
+      <canvas id="histChart" role="img" aria-label="Historische Wetterdaten im gewählten Zeitraum">Verlaufsdaten.</canvas>
+      <div class="no-data" id="noDataMsg" style="display:none">Keine Daten für diesen Zeitraum.<br><small>Daten werden ab dem ersten Empfang täglich gespeichert.</small></div>
     </div>
     <div class="chart-legend" id="chartLegend"></div>
-
   </div>
 </div>
 
@@ -406,15 +389,27 @@
 <script>
 'use strict';
 
-// ── Constants ────────────────────────────────────────────────
-const DIR = ['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+// ── Config ───────────────────────────────────────────────────
+const LAT = 50.1, LON = 8.7; // Frankfurt / Gründau
 
+// ── Condition map ────────────────────────────────────────────
+const CONDITIONS = {
+  sunny:         { icon: '☀️',  text: 'Heiter',         glow: 'rgba(251,191,36,0.18)'  },
+  partly_cloudy: { icon: '⛅',  text: 'Leicht bewölkt', glow: 'rgba(148,163,184,0.12)' },
+  overcast:      { icon: '☁️',  text: 'Bewölkt',        glow: 'rgba(100,116,139,0.10)' },
+  light_rain:    { icon: '🌦️', text: 'Leichter Regen', glow: 'rgba(34,211,238,0.15)'  },
+  heavy_rain:    { icon: '🌧️', text: 'Starkregen',     glow: 'rgba(14,165,233,0.18)'  },
+  storm:         { icon: '⛈️', text: 'Gewitter',       glow: 'rgba(250,204,21,0.20)'  },
+  night:         { icon: '🌙',  text: 'Nacht',          glow: 'rgba(139,92,246,0.10)'  },
+};
+
+// ── Chart configs ────────────────────────────────────────────
 const CHART_CONFIGS = {
   temp: {
     title: 'Temperatur & Luftfeuchtigkeit',
     datasets: [
-      { key: 'outTemp',  label: 'Ø Temperatur',     unit: '°C',  color: '#fb923c', yAxisID: 'y'  },
-      { key: 'outHumi',  label: 'Ø Luftfeuchtigkeit', unit: '%', color: '#60a5fa', yAxisID: 'y1' },
+      { key: 'outTemp',  label: 'Ø Temperatur',       unit: '°C',   color: '#fb923c', yAxisID: 'y'  },
+      { key: 'outHumi',  label: 'Ø Luftfeuchtigkeit', unit: '%',    color: '#60a5fa', yAxisID: 'y1' },
     ],
   },
   wind: {
@@ -425,15 +420,13 @@ const CHART_CONFIGS = {
     ],
   },
   rain: {
-    title: 'Täglicher Niederschlag',
-    chartType: 'bar',
+    title: 'Täglicher Niederschlag', chartType: 'bar',
     datasets: [
       { key: 'rainDaily', label: 'Niederschlag', unit: 'mm', color: '#22d3ee', yAxisID: 'y' },
     ],
   },
   lightning: {
-    title: 'Blitzentladungen pro Tag',
-    chartType: 'bar',
+    title: 'Blitzentladungen pro Tag', chartType: 'bar',
     datasets: [
       { key: 'lightningCount', label: 'Blitze', unit: '', color: '#facc15', yAxisID: 'y' },
     ],
@@ -441,26 +434,22 @@ const CHART_CONFIGS = {
   uv: {
     title: 'UV-Index & Solarstrahlung',
     datasets: [
-      { key: 'uvIndex',  label: 'Ø UV-Index',       unit: '',     color: '#a78bfa', yAxisID: 'y'  },
+      { key: 'uvIndex',  label: 'Ø UV-Index',        unit: '',     color: '#a78bfa', yAxisID: 'y'  },
       { key: 'solarRad', label: 'Ø Solarstrahlung',  unit: 'W/m²', color: '#f97316', yAxisID: 'y1' },
     ],
   },
 };
 
-// ── Helpers ──────────────────────────────────────────────────
-function degToDir(d) {
-  if (d == null) return '--';
-  return DIR[Math.round(d / 22.5) % 16];
-}
-function uvCategory(uv) {
-  if (uv == null) return '';
-  if (uv < 3)  return 'Niedrig';
-  if (uv < 6)  return 'Mittel';
-  if (uv < 8)  return 'Hoch';
-  if (uv < 11) return 'Sehr hoch';
-  return 'Extrem';
-}
-function fmt(v, dec = 1) { return v != null ? Number(v).toFixed(dec) : '--'; }
+// ── Utility functions ────────────────────────────────────────
+const DIR = ['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+function degToDir(d) { return d != null ? DIR[Math.round(d / 22.5) % 16] : '--'; }
+function fmt(v, d = 1) { return v != null ? Number(v).toFixed(d) : '--'; }
+function el(id) { return document.getElementById(id); }
+function set(id, val) { const e = el(id); if (e) e.textContent = val; }
+function todayStr()    { return new Date().toLocaleDateString('en-CA'); }
+function daysAgoStr(n) { const d = new Date(); d.setDate(d.getDate()-n+1); return d.toLocaleDateString('en-CA'); }
+function fmtLabel(s)   { const [,m,d]=s.split('-'); return `${d}.${m}.`; }
+
 function timeAgo(iso) {
   if (!iso) return '--';
   const s = Math.floor((Date.now() - new Date(iso)) / 1000);
@@ -469,30 +458,158 @@ function timeAgo(iso) {
   if (s < 86400) return `vor ${Math.floor(s / 3600)} h`;
   return new Date(iso).toLocaleString('de-DE');
 }
-function el(id) { return document.getElementById(id); }
-function set(id, val) { const e = el(id); if (e) e.textContent = val; }
-function todayStr()    { return new Date().toLocaleDateString('en-CA'); }
-function daysAgoStr(n) { const d = new Date(); d.setDate(d.getDate() - n + 1); return d.toLocaleDateString('en-CA'); }
-function fmtLabel(str) { const [, m, d] = str.split('-'); return `${d}.${m}.`; }
 
-// ── Live weather refresh ─────────────────────────────────────
+function uvCategory(uv) {
+  if (uv == null) return '';
+  if (uv < 3) return 'Niedrig'; if (uv < 6) return 'Mittel';
+  if (uv < 8) return 'Hoch';   if (uv < 11) return 'Sehr hoch';
+  return 'Extrem';
+}
+
+function beaufort(kmh) {
+  if (kmh == null) return null;
+  const lim  = [1,6,12,20,29,39,50,62,75,89,103,118];
+  const name = ['Windstille','Leiser Zug','Leichte Brise','Schwache Brise','Mäßige Brise',
+                'Frische Brise','Starker Wind','Steifer Wind','Stürmischer Wind','Sturm',
+                'Schwerer Sturm','Orkanartiger Sturm','Orkan'];
+  for (let i = 0; i < lim.length; i++) if (kmh < lim[i]) return { n: i, name: name[i] };
+  return { n: 12, name: 'Orkan' };
+}
+
+function feelsLike(temp, humi, windKmh) {
+  if (temp == null) return null;
+  const w = windKmh ?? 0, h = humi ?? 50;
+  if (temp <= 10 && w > 4.8) {
+    const v16 = Math.pow(w, 0.16);
+    return +(13.12 + 0.6215*temp - 11.37*v16 + 0.3965*temp*v16).toFixed(1);
+  }
+  if (temp >= 27 && h >= 40) {
+    const HI = -8.78469 + 1.61139*temp + 2.33855*h - 0.14612*temp*h
+               - 0.01231*temp*temp - 0.01642*h*h + 0.00221*temp*temp*h
+               + 0.00073*temp*h*h - 0.0000036*temp*temp*h*h;
+    return +HI.toFixed(1);
+  }
+  return +(temp - (w / 70)).toFixed(1);
+}
+
+function dewPoint(temp, humi) {
+  if (temp == null || humi == null) return null;
+  const a = 17.625, b = 243.04;
+  const alpha = Math.log(humi / 100) + (a * temp) / (b + temp);
+  return +(b * alpha / (a - alpha)).toFixed(1);
+}
+
+function rainIntensity(rate) {
+  if (rate == null || rate < 0.1) return { text: 'Kein Regen',    color: '#94a3b8', bg: 'rgba(148,163,184,0.08)', brd: 'rgba(148,163,184,0.18)' };
+  if (rate < 2.5)                 return { text: 'Leichter Regen', color: '#22d3ee', bg: 'rgba(34,211,238,0.08)',  brd: 'rgba(34,211,238,0.22)'  };
+  if (rate < 7.5)                 return { text: 'Mäßiger Regen',  color: '#0ea5e9', bg: 'rgba(14,165,233,0.08)',  brd: 'rgba(14,165,233,0.22)'  };
+  return                                 { text: 'Starkregen',      color: '#818cf8', bg: 'rgba(129,140,248,0.1)',  brd: 'rgba(129,140,248,0.25)' };
+}
+
+function getCondition(d) {
+  const solar = d.solar?.radiation ?? 0;
+  const rain  = d.rain?.rate ?? 0;
+  const light = d.lightning?.count ?? 0;
+  if (solar < 15)                    return 'night';
+  if (light > 0 && rain > 0)         return 'storm';
+  if (rain > 5)                      return 'heavy_rain';
+  if (rain > 0.1)                    return 'light_rain';
+  if (solar > 300)                   return 'sunny';
+  if (solar > 80)                    return 'partly_cloudy';
+  return 'overcast';
+}
+
+function sunTimes() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const day = Math.floor((now - start) / 86400000);
+  const B = (2 * Math.PI / 365) * (day - 81);
+  const EqT = 9.87*Math.sin(2*B) - 7.53*Math.cos(B) - 1.5*Math.sin(B);
+  const decl = 23.45 * Math.sin(B) * Math.PI / 180;
+  const ha = Math.acos(-Math.tan(LAT * Math.PI/180) * Math.tan(decl)) * 180 / Math.PI;
+  const noon = (720 - 4*LON - EqT) / 60;
+  const tz = now.getTimezoneOffset() / -60; // local UTC offset
+  function fh(h) { const hh=Math.floor(h+tz)%24,mm=Math.round((h-(Math.floor(h)))*60); return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`; }
+  return { rise: fh(noon - ha/15), set: fh(noon + ha/15) };
+}
+
+// ── Sparklines ───────────────────────────────────────────────
+function makeSpark(containerId, data, color) {
+  const container = el(containerId);
+  if (!container) return;
+  const vals = (data || []).filter(v => v != null);
+  if (vals.length < 2) { container.innerHTML = ''; return; }
+
+  const w = 200, h = 38, pad = 2;
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const range = max - min || 1;
+
+  const pts = data.map((v, i) => {
+    if (v == null) return null;
+    const x = (i / (data.length - 1)) * w;
+    const y = h - pad - ((v - min) / range) * (h - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).filter(Boolean);
+
+  if (pts.length < 2) { container.innerHTML = ''; return; }
+
+  const gid = 'sg' + Math.random().toString(36).slice(2, 7);
+  const fx = pts[0].split(',')[0], lx = pts[pts.length-1].split(',')[0];
+  const fill = `${fx},${h} ${pts.join(' ')} ${lx},${h}`;
+
+  container.innerHTML = `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none" style="display:block">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <polygon points="${fill}" fill="url(#${gid})"/>
+    <polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+// ── Live weather update ──────────────────────────────────────
 async function refresh() {
   const dot  = el('dot');
   const info = el('lastUpdate');
-  try {
-    const res = await fetch('/api/weather');
-    if (!res.ok) throw new Error('no data');
-    const d = await res.json();
 
+  try {
+    const [wRes, sRes] = await Promise.all([fetch('/api/weather'), fetch('/api/sparklines')]);
+    if (!wRes.ok) throw new Error('no data');
+
+    const d = await wRes.json();
+    const sparkRaw = sRes.ok ? await sRes.json() : [];
+
+    // Status
     dot.className = 'dot';
     info.textContent = 'Zuletzt: ' + new Date(d.timestamp).toLocaleTimeString('de-DE');
 
-    // Outdoor
+    // ── Hero ──
+    const cond = CONDITIONS[getCondition(d)];
+    set('condIcon', cond.icon);
+    set('condText', cond.text);
+    el('heroGlow').style.background = `radial-gradient(circle, ${cond.glow} 0%, transparent 70%)`;
+    set('heroTemp',  fmt(d.outdoor.temp));
+    set('heroFeels', feelsLike(d.outdoor.temp, d.outdoor.humidity, d.wind.speed) ?? '--');
+    set('heroMin',   d.today?.tempMin != null ? fmt(d.today.tempMin) : '--');
+    set('heroMax',   d.today?.tempMax != null ? fmt(d.today.tempMax) : '--');
+    set('heroHumi',  (d.outdoor.humidity ?? '--') + '%');
+    set('heroDew',   dewPoint(d.outdoor.temp, d.outdoor.humidity) ?? '--');
+
+    // Sunrise/Sunset
+    const sun = sunTimes();
+    set('sunrise', sun.rise);
+    set('sunset',  sun.set);
+
+    // ── Outdoor card ──
     set('outTemp', fmt(d.outdoor.temp));
     set('outHumi', (d.outdoor.humidity ?? '--') + '%');
     el('outHumiBar').style.width = (d.outdoor.humidity ?? 0) + '%';
+    set('feelsLike', feelsLike(d.outdoor.temp, d.outdoor.humidity, d.wind.speed) ?? '--');
+    set('dewPoint',  dewPoint(d.outdoor.temp, d.outdoor.humidity) ?? '--');
+    set('todayMin',  d.today?.tempMin != null ? fmt(d.today.tempMin) : '--');
+    set('todayMax',  d.today?.tempMax != null ? fmt(d.today.tempMax) : '--');
 
-    // Wind
+    // ── Wind card ──
     set('windSpeed', fmt(d.wind.speed));
     set('windGust',  fmt(d.wind.gust));
     set('windMax',   fmt(d.wind.maxDailyGust));
@@ -500,38 +617,64 @@ async function refresh() {
     if (d.wind.direction != null)
       el('windArrow').style.transform = `rotate(${d.wind.direction}deg)`;
 
-    // Rain
+    const bft = beaufort(d.wind.speed);
+    if (bft) {
+      set('bftBadge', `Bft ${bft.n}`);
+      set('bftName', bft.name);
+    }
+
+    // ── Rain card ──
     set('rainRate',    fmt(d.rain.rate));
     set('rainEvent',   fmt(d.rain.event));
     set('rainDaily',   fmt(d.rain.daily));
     set('rainWeekly',  fmt(d.rain.weekly));
     set('rainMonthly', fmt(d.rain.monthly));
+    const ri = rainIntensity(d.rain.rate);
+    const rb = el('rainBadge');
+    rb.textContent = ri.text;
+    rb.style.cssText = `background:${ri.bg};color:${ri.color};border:1px solid ${ri.brd}`;
 
-    // Lightning
+    // ── Lightning card ──
     set('lCount', d.lightning.count ?? '--');
     set('lDist',  d.lightning.distance != null ? d.lightning.distance + ' km' : '-- km');
     const badge = el('lBadge');
-    if (d.lightning.lastTime) {
-      badge.style.display = 'inline-flex';
-      set('lTime', timeAgo(d.lightning.lastTime));
-    } else {
-      badge.style.display = 'none';
-    }
+    if (d.lightning.lastTime) { badge.style.display = 'inline-flex'; set('lTime', timeAgo(d.lightning.lastTime)); }
+    else badge.style.display = 'none';
 
-    // UV / Solar
+    // ── Solar card ──
     const uv = d.solar.uv;
     set('uvVal', uv != null ? Number(uv).toFixed(1) : '--');
     set('uvCat', uvCategory(uv));
     el('uvDot').style.left = Math.min((uv ?? 0) / 12 * 100, 100) + '%';
     set('solarRad', d.solar.radiation ?? '--');
+    set('solarMax',  d.today?.solarMax != null ? Math.round(d.today.solarMax) : '--');
+
+    // ── Stale check ──
+    const ageMin = (Date.now() - new Date(d.timestamp)) / 60000;
+    const stale = el('staleBanner');
+    if (ageMin > 5) {
+      set('staleMin', Math.round(ageMin));
+      stale.classList.add('visible');
+    } else {
+      stale.classList.remove('visible');
+    }
+
+    // ── Sparklines ──
+    makeSpark('spark-temp',      sparkRaw.map(s => s.t), '#fb923c');
+    makeSpark('spark-wind',      sparkRaw.map(s => s.w), '#60a5fa');
+    makeSpark('spark-rain',      sparkRaw.map(s => s.r), '#22d3ee');
+    makeSpark('spark-lightning', sparkRaw.map(s => s.l), '#facc15');
+    makeSpark('spark-solar',     sparkRaw.map(s => s.s), '#a78bfa');
 
   } catch (_) {
     dot.className = 'dot offline';
     info.textContent = 'Keine Verbindung zur Station';
+    el('staleBanner').classList.add('visible');
+    set('staleMin', '?');
   }
 }
 
-// ── Chart modal ──────────────────────────────────────────────
+// ── History chart modal ──────────────────────────────────────
 let activeChart   = null;
 let currentSensor = null;
 
@@ -541,122 +684,63 @@ function setActiveQuick(id) {
 }
 
 async function fetchAndRender() {
-  const from = el('dateFrom').value;
-  const to   = el('dateTo').value;
+  const from = el('dateFrom').value, to = el('dateTo').value;
   if (!from || !to) return;
-
-  let url = '/api/daily';
-  const p = [];
-  if (from) p.push('from=' + from);
-  if (to)   p.push('to='   + to);
-  if (p.length) url += '?' + p.join('&');
-
   let data = [];
   try {
-    const res = await fetch(url);
+    const p = ['from='+from,'to='+to];
+    const res = await fetch('/api/daily?' + p.join('&'));
     data = await res.json();
-  } catch (_) { data = []; }
-
+  } catch (_) {}
   renderChart(data);
 }
 
 function renderChart(data) {
   const cfg = CHART_CONFIGS[currentSensor];
-
   if (activeChart) { activeChart.destroy(); activeChart = null; }
-
-  const canvas  = el('histChart');
-  const noData  = el('noDataMsg');
-  const legend  = el('chartLegend');
-
+  const canvas = el('histChart'), noData = el('noDataMsg'), legend = el('chartLegend');
   if (!data || data.length === 0) {
-    canvas.style.display  = 'none';
-    noData.style.display  = 'flex';
-    legend.innerHTML = '';
+    canvas.style.display = 'none'; noData.style.display = 'flex'; legend.innerHTML = '';
     return;
   }
-  canvas.style.display = 'block';
-  noData.style.display = 'none';
-
-  el('modalSubtitle').textContent =
-    fmtLabel(data[0].date) + ' – ' + fmtLabel(data[data.length - 1].date) +
-    ' · ' + data.length + ' Tage (Tagesdurchschnitt)';
-
-  const step   = Math.max(1, Math.floor(data.length / 10));
+  canvas.style.display = 'block'; noData.style.display = 'none';
+  el('modalSubtitle').textContent = fmtLabel(data[0].date) + ' – ' + fmtLabel(data[data.length-1].date) + ' · ' + data.length + ' Tage';
+  const step = Math.max(1, Math.floor(data.length / 10));
   const labels = data.map((d, i) => i % step === 0 ? fmtLabel(d.date) : '');
   const isBar  = cfg.chartType === 'bar';
-  const hasDual = cfg.datasets.length > 1 && cfg.datasets.some(d => d.yAxisID === 'y1');
-
+  const hasDual = cfg.datasets.some(d => d.yAxisID === 'y1');
   const datasets = cfg.datasets.map(ds => ({
-    label:           ds.label,
-    data:            data.map(d => d[ds.key] ?? null),
-    borderColor:     ds.color,
-    backgroundColor: isBar ? ds.color + 'bb' : ds.color + '22',
-    borderWidth:     isBar ? 0 : 1.5,
-    pointRadius:     data.length < 15 ? 3 : 0,
-    fill:            !isBar,
-    tension:         0.35,
-    yAxisID:         ds.yAxisID,
-    spanGaps:        true,
+    label: ds.label, data: data.map(d => d[ds.key] ?? null),
+    borderColor: ds.color, backgroundColor: isBar ? ds.color+'bb' : ds.color+'22',
+    borderWidth: isBar ? 0 : 1.5, pointRadius: data.length < 15 ? 3 : 0,
+    fill: !isBar, tension: 0.35, yAxisID: ds.yAxisID, spanGaps: true,
   }));
-
   const scales = {
-    x: {
-      ticks:  { color: '#94a3b8', font: { size: 11 }, maxRotation: 0 },
-      grid:   { color: 'rgba(255,255,255,0.04)' },
-      border: { color: 'rgba(255,255,255,0.08)' },
-    },
-    y: {
-      position: 'left',
-      ticks:    { color: cfg.datasets[0].color, font: { size: 11 } },
-      grid:     { color: 'rgba(255,255,255,0.04)' },
-      border:   { color: 'rgba(255,255,255,0.08)' },
-    },
+    x: { ticks:{color:'#94a3b8',font:{size:11},maxRotation:0}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.08)'} },
+    y: { position:'left', ticks:{color:cfg.datasets[0].color,font:{size:11}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.08)'} },
   };
-  if (hasDual) {
-    scales.y1 = {
-      position: 'right',
-      ticks:    { color: cfg.datasets[1].color, font: { size: 11 } },
-      grid:     { drawOnChartArea: false },
-      border:   { color: 'rgba(255,255,255,0.08)' },
-    };
-  }
-
+  if (hasDual) scales.y1 = { position:'right', ticks:{color:cfg.datasets[1].color,font:{size:11}}, grid:{drawOnChartArea:false}, border:{color:'rgba(255,255,255,0.08)'} };
   activeChart = new Chart(canvas, {
-    type: isBar ? 'bar' : 'line',
-    data: { labels, datasets },
+    type: isBar ? 'bar' : 'line', data: { labels, datasets },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
+      responsive: true, maintainAspectRatio: false, interaction: { mode:'index', intersect:false },
       plugins: {
         legend: { display: false },
-        tooltip: {
-          backgroundColor: '#1a2332',
-          titleColor:      '#94a3b8',
-          bodyColor:       '#f1f5f9',
-          borderColor:     'rgba(255,255,255,0.1)',
-          borderWidth:     1,
-          callbacks: {
-            label(ctx) {
-              const u = cfg.datasets[ctx.datasetIndex].unit;
-              return ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(1)}${u ? ' ' + u : ''}`;
-            },
-          },
+        tooltip: { backgroundColor:'#1a2332', titleColor:'#94a3b8', bodyColor:'#f1f5f9', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
+          callbacks: { label(ctx) { const u=cfg.datasets[ctx.datasetIndex].unit; return ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(1)}${u?' '+u:''}`; } },
         },
       },
       scales,
     },
   });
-
   legend.innerHTML = cfg.datasets.map(ds =>
-    `<span class="legend-item"><span class="legend-dot" style="background:${ds.color}"></span>${ds.label}${ds.unit ? ' (' + ds.unit + ')' : ''}</span>`
+    `<span class="legend-item"><span class="legend-dot" style="background:${ds.color}"></span>${ds.label}${ds.unit?' ('+ds.unit+')':''}</span>`
   ).join('');
 }
 
 function openChart(sensor) {
   currentSensor = sensor;
-  set('modalTitle',    CHART_CONFIGS[sensor].title);
+  set('modalTitle', CHART_CONFIGS[sensor].title);
   set('modalSubtitle', '');
   el('dateFrom').value = daysAgoStr(30);
   el('dateTo').value   = todayStr();
@@ -664,29 +748,20 @@ function openChart(sensor) {
   el('chartModal').classList.add('open');
   fetchAndRender();
 }
-
 function closeChart() {
   el('chartModal').classList.remove('open');
   if (activeChart) { activeChart.destroy(); activeChart = null; }
 }
-
-function applyDateRange() {
-  setActiveQuick(null);
-  fetchAndRender();
-}
-
+function applyDateRange() { setActiveQuick(null); fetchAndRender(); }
 function setQuick(days) {
   el('dateFrom').value = days === 0 ? '2000-01-01' : daysAgoStr(days);
   el('dateTo').value   = todayStr();
-  setActiveQuick(days === 7 ? 'q7' : days === 30 ? 'q30' : days === 90 ? 'q90' : days === 0 ? 'qall' : null);
+  setActiveQuick(days===7?'q7':days===30?'q30':days===90?'q90':days===0?'qall':null);
   fetchAndRender();
 }
 
-// Close on backdrop click
 el('chartModal').addEventListener('click', function(e) { if (e.target === this) closeChart(); });
-
-// Close on Escape
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeChart(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChart(); });
 
 // ── Start ────────────────────────────────────────────────────
 refresh();
