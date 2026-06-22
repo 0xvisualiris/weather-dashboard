@@ -1,3 +1,5 @@
+# Private Vibecoded Dashboard.
+
 # Wetterstation Gründau – Self-hosted Dashboard
 
 Empfängt Daten per **Ecowitt Local Push** und stellt sie als öffentliches Dashboard bereit.
