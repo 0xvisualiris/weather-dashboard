@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Wetterstation Gründau">
+  <defs>
+    <!-- Background -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f1829"/>
+      <stop offset="100%" stop-color="#0d1422"/>
+    </linearGradient>
+    <!-- Sun: bright centre, deep orange edge -->
+    <radialGradient id="sg" cx="32%" cy="28%" r="68%">
+      <stop offset="0%"   stop-color="#fef9c3"/>
+      <stop offset="30%"  stop-color="#fdba74"/>
+      <stop offset="68%"  stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#9a3412" stop-opacity="0.85"/>
+    </radialGradient>
+    <!-- Cloud: sky-blue → violet -->
+    <linearGradient id="cg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#e0f2fe"/>
+      <stop offset="28%"  stop-color="#7dd3fc"/>
+      <stop offset="62%"  stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+    <!-- Cloud highlight sheen on top edge -->
+    <linearGradient id="ch" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Rain drop: sky-blue → deep blue -->
+    <linearGradient id="dg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.82"/>
+    </linearGradient>
+    <!-- Clip to rounded square -->
+    <clipPath id="clip">
+      <rect width="64" height="64" rx="14"/>
+    </clipPath>
+    <!-- Soft glow for sun -->
+    <filter id="sgf" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.8" result="b"/>
+      <feComposite in="SourceGraphic" in2="b" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+
+  <!-- Sun ambient halo -->
+  <circle cx="47" cy="15" r="22" fill="#f97316" opacity="0.18" clip-path="url(#clip)"/>
+
+  <!-- Sun body -->
+  <circle cx="47" cy="15" r="13" fill="url(#sg)" filter="url(#sgf)" clip-path="url(#clip)"/>
+
+  <!-- Cloud drop-shadow -->
+  <path clip-path="url(#clip)" fill="#000030" opacity="0.22" transform="translate(0.5,2.5)"
+    d="M9 39Q9 29 18 27Q18 17 28 17Q35 12 41.5 18Q47 14 52 22Q59 21 59 31Q63 33 60 40Q60 47 52 47L15 47Q9 47 9 39Z"/>
+
+  <!-- Cloud body -->
+  <path clip-path="url(#clip)" fill="url(#cg)"
+    d="M9 39Q9 29 18 27Q18 17 28 17Q35 12 41.5 18Q47 14 52 22Q59 21 59 31Q63 33 60 40Q60 47 52 47L15 47Q9 47 9 39Z"/>
+
+  <!-- Cloud top sheen -->
+  <path clip-path="url(#clip)" fill="url(#ch)"
+    d="M9 39Q9 29 18 27Q18 17 28 17Q35 12 41.5 18Q47 14 52 22Q59 21 59 29L59 31Q55 23 49 26Q44 17 38 21Q35 14 26 20Q17 20 17 30Z"/>
+
+  <!-- Rain drop 1 (left) -->
+  <path clip-path="url(#clip)" fill="url(#dg)"
+    d="M19.5 49C16.8 52.5 16.8 59 19.5 59C22.2 59 22.2 52.5 19.5 49Z"/>
+
+  <!-- Rain drop 2 (centre — slightly lower, longer) -->
+  <path clip-path="url(#clip)" fill="url(#dg)" opacity="0.85"
+    d="M32 51.5C29.3 55.5 29.3 62 32 62C34.7 62 34.7 55.5 32 51.5Z"/>
+
+  <!-- Rain drop 3 (right) -->
+  <path clip-path="url(#clip)" fill="url(#dg)" opacity="0.68"
+    d="M44.5 49C41.8 52.5 41.8 59 44.5 59C47.2 59 47.2 52.5 44.5 49Z"/>
+</svg>
