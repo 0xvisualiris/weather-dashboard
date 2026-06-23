@@ -182,15 +182,6 @@ Useful for debugging. Every Ecowitt push and DWD API call is logged:
 ```bash
 docker compose logs -f
 ```
-
----
-
-## Native Mobile App (iOS / iPadOS / macOS / watchOS)
-
-There's also a companion SwiftUI app in the `wetterstation-ios/` folder. It calls the same API endpoints directly and displays the data natively. Includes home screen widgets and a watchOS app.
-
-See [`wetterstation-ios/SETUP.md`](wetterstation-ios/SETUP.md) for how to build and sideload it onto your own devices without publishing to the App Store.
-
 ---
 
 ## License
@@ -199,4 +190,4 @@ Do whatever you want with this. MIT.
 
 ---
 
-*Built with ❤️ and a lot of Claude in Gründau-Gettenbach.*
+*Built with ❤️ and a lot of Claude.*
