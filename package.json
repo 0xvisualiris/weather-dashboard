@@ -1,0 +1,9 @@
+{
+  "name": "weather-dashboard",
+  "version": "1.0.0",
+  "description": "Ecowitt local push receiver + dashboard",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
