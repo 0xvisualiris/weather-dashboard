@@ -1,6 +1,6 @@
 # Wetterstation Gründau 🌦️
 
-A self-hosted personal weather dashboard for my Ecowitt weather station in Gründau-Gettenbach, Germany.
+A self-hosted personal weather dashboard for my Ecowitt weather station in my village.
 
 > **⚠️ Heads up:** This is a 100% vibecoded hobby project built entirely with AI assistance. I'm not a professional developer and I'm not actively maintaining this. I built it to learn how AI can help with coding — it's a fun experiment, not production software. Use it, fork it, break it — all good.
 
