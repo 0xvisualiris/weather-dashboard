@@ -30,6 +30,7 @@
            flex-shrink:0; animation:bl 2s infinite; }
     .dot.offline { background:#f87171; animation:none; }
     @keyframes bl { 0%,100%{opacity:1} 50%{opacity:.35} }
+    /* Desktop: absolute top-right */
     .lw { position:absolute; right:0; top:0; display:flex; align-items:center; gap:3px;
           background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
           border-radius:8px; padding:3px; }
@@ -38,6 +39,11 @@
           border-radius:6px; cursor:pointer; font-size:.72rem; font-family:inherit;
           font-weight:700; transition:all .15s; }
     .lb.active { background:#1e2a3a; color:var(--tx); }
+    /* Mobile: de-absolute the toggle, show it in the status row instead */
+    @media (max-width: 639px) {
+      .lw { position:static; margin-left:6px; }
+      .sr { flex-wrap:wrap; justify-content:center; }
+    }
 
     /* ── Alert banners (FIX 3) ─────────────────────── */
     #alertWrap { max-width:1100px; margin:0 auto .85rem; }
@@ -897,6 +903,7 @@ function switchView(name) {
     el('t-'+v).ariaSelected   = v===name;
   });
   currentView = name;
+  localStorage.setItem('wg_tab', name);  // persist across reloads
   if (name==='radar' && !mapInited) { mapInited=true; setTimeout(initMap,60); }
   if (name==='dwd') {
     // Apply cached data immediately — refreshDWD() runs on page load while view
@@ -1329,6 +1336,10 @@ el('chartModal').addEventListener('click',function(e){if(e.target===this)closeCh
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeChart();});
 
 // ── Start ─────────────────────────────────────────────────────
+// ── Restore last active tab before first fetch ───────────────
+const _savedTab = localStorage.getItem('wg_tab') || 'eco';
+if (_savedTab !== 'eco') switchView(_savedTab);  // eco is already default
+
 refresh();
 setInterval(refresh, 30000);
 
