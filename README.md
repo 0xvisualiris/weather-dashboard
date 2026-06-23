@@ -1,40 +1,40 @@
-# 🌤 Wetterstation Gründau
+# 🌤 Weather Station Gründau
 
-> **Hobby-Projekt · 100% vibecoded · keine aktive Wartung**
+> **Hobby project · 100% vibecoded · not actively maintained**
 >
-> Dieses Projekt ist in meiner Freizeit entstanden und wird nicht regelmäßig gepflegt. Es läuft bei mir zuverlässig — aber Issues und Pull Requests beantworte ich nur wenn ich Zeit habe.
+> This project was built in my spare time and is not regularly maintained. It runs reliably for me — but I'll only respond to issues and pull requests when I have time.
 
 ![Dashboard Screenshot](./screenshot.png)
 
 ---
 
-## Was dieses Dashboard zeigt
+## What this dashboard shows
 
-Ein self-hosted Wetter-Dashboard für Ecowitt-Wetterstationen mit lokalem HTTP-Push. Keine Cloud, keine externen Dienste — die Daten bleiben im eigenen Netzwerk.
+A self-hosted weather dashboard for Ecowitt weather stations using local HTTP push. No cloud, no external services — all data stays on your own network.
 
-**Live-Ansicht (alle 30 Sekunden aktualisiert):**
+**Live view (updates every 30 seconds):**
 
-- **Hero-Banner** — aktuelle Wetterlage (Heiter / Bewölkt / Regen / Gewitter), Temperatur, gefühlte Temperatur, Tages-Min/Max, Taupunkt, Sonnenauf- und -untergang
-- **Außentemperatur** — mit Luftfeuchtigkeit, gefühlter Temperatur und Taupunkt
-- **Wind** — Kompassnadel, Geschwindigkeit, Böen, Beaufort-Skala mit Klartext
-- **Niederschlag** — aktuelle Rate, Ereignis, Tages-/Wochen-/Monatswerte, Intensitäts-Badge
-- **Blitzentladungen** — Tagesanzahl, Distanz und Zeitpunkt des letzten Einschlags
-- **UV & Solarstrahlung** — UV-Index mit Farbskala, Solarstrahlung in W/m², Tagesmaximum
-- **Mini-Sparklines** — 24h-Trendlinie am unteren Rand jeder Karte
+- **Hero banner** — current weather condition (sunny / cloudy / rain / thunderstorm), temperature, feels-like temperature, daily min/max, dew point, sunrise and sunset times
+- **Outdoor temperature** — with humidity, feels-like temperature and dew point
+- **Wind** — compass needle, speed, gusts, Beaufort scale with plain-text description
+- **Precipitation** — current rate, event total, daily/weekly/monthly totals, intensity badge
+- **Lightning** — strike count today, distance and time of last strike
+- **UV & Solar radiation** — UV index with color scale, solar radiation in W/m², daily maximum
+- **Mini sparklines** — 24h trend line at the bottom of each card
 
-**Historische Ansicht (Klick auf das Chart-Icon einer Karte):**
+**Historical view (click the chart icon on any card):**
 
-- Datepicker mit frei wählbarem Start- und Enddatum
-- Schnellauswahl: 7 Tage · 30 Tage · 3 Monate · Alles
-- Dual-Achsen-Graphen (z. B. Temperatur °C + Luftfeuchtigkeit % gleichzeitig)
-- Tagesdurchschnitte werden automatisch gespeichert und überleben Neustarts
+- Date picker with freely selectable start and end date
+- Quick selection: 7 days · 30 days · 3 months · All
+- Dual-axis charts (e.g. temperature °C + humidity % at the same time)
+- Daily averages are saved automatically and survive container restarts
 
 ---
 
-## Voraussetzungen
+## Requirements
 
 - Docker & Docker Compose
-- Ecowitt-Wetterstation mit Gateway (GW1000, GW2000, HP2553 o. ä.) im selben Netzwerk
+- Ecowitt weather station with gateway (GW1000, GW2000, HP2553, etc.) on the same network
 
 ---
 
@@ -46,75 +46,75 @@ cd weather-dashboard
 docker compose up -d
 ```
 
-Das Dashboard ist danach erreichbar unter:
+The dashboard will then be available at:
 
 ```
 http://<SERVER-IP>:3000
 ```
 
-Für externen Zugriff (z. B. für Nachbarn) einfach einen Reverse-Proxy-Eintrag in Nginx Proxy Manager anlegen:
+For external access (e.g. to share with neighbours), add a reverse proxy entry in Nginx Proxy Manager:
 
 - **Forward Hostname/IP:** `<SERVER-IP>`
 - **Port:** `3000`
-- SSL-Zertifikat aktivieren
+- Enable SSL certificate
 
 ---
 
-## Ecowitt Gateway konfigurieren
+## Ecowitt gateway configuration
 
-Öffne die **WS View Plus** App (iOS / Android):
+Open the **WS View Plus** app (iOS / Android):
 
-1. Gerät auswählen → **Mehr** → **Upload to Customized Server**
-2. Folgende Einstellungen setzen:
+1. Select your device → **More** → **Upload to Customized Server**
+2. Enter the following settings:
 
-| Feld              | Wert                     |
+| Field             | Value                    |
 |-------------------|--------------------------|
 | Protocol Type     | **Ecowitt**              |
-| Server IP / Host  | `<IP deines Servers>`    |
+| Server IP / Host  | `<your server IP>`       |
 | Path              | `/data/report/`          |
 | Port              | `3000`                   |
-| Upload interval   | `60` (Sekunden)          |
+| Upload interval   | `60` (seconds)           |
 
-3. Speichern — nach spätestens 60 Sekunden erscheinen die ersten Daten.
-
----
-
-## Unterstützte Sensoren
-
-| Sensor                  | Einheit | Ecowitt-Feld      |
-|-------------------------|---------|-------------------|
-| Außentemperatur         | °C      | `tempf`           |
-| Außenluftfeuchtigkeit   | %       | `humidity`        |
-| Windgeschwindigkeit     | km/h    | `windspeedmph`    |
-| Windböe                 | km/h    | `windgustmph`     |
-| Windrichtung            | °       | `winddir`         |
-| Niederschlagsrate       | mm/h    | `rainratein`      |
-| Tagesniederschlag       | mm      | `dailyrainin`     |
-| UV-Index                | —       | `uv`              |
-| Solarstrahlung          | W/m²    | `solarradiation`  |
-| Blitze heute            | Anzahl  | `lightning_num`   |
-| Blitzdistanz            | km      | `lightning`       |
-| Letzter Blitz           | Unix-ts | `lightning_time`  |
+3. Save — data will appear within 60 seconds.
 
 ---
 
-## Datenspeicherung
+## Supported sensors
 
-Alle Daten bleiben lokal in einem Docker-Volume:
+| Sensor               | Unit  | Ecowitt field     |
+|----------------------|-------|-------------------|
+| Outdoor temperature  | °C    | `tempf`           |
+| Outdoor humidity     | %     | `humidity`        |
+| Wind speed           | km/h  | `windspeedmph`    |
+| Wind gust            | km/h  | `windgustmph`     |
+| Wind direction       | °     | `winddir`         |
+| Rain rate            | mm/h  | `rainratein`      |
+| Daily rain           | mm    | `dailyrainin`     |
+| UV index             | —     | `uv`              |
+| Solar radiation      | W/m²  | `solarradiation`  |
+| Lightning count      | count | `lightning_num`   |
+| Lightning distance   | km    | `lightning`       |
+| Last lightning       | Unix  | `lightning_time`  |
 
-| Datei                | Inhalt                                 |
-|----------------------|----------------------------------------|
-| `/data/weather.json` | Letzter Messwert + letzte 24h          |
-| `/data/daily.json`   | Tagesdurchschnitte seit erstem Empfang |
+---
+
+## Data storage
+
+All data is stored locally in a Docker volume:
+
+| File                 | Contents                                    |
+|----------------------|---------------------------------------------|
+| `/data/weather.json` | Latest reading + last 24h                   |
+| `/data/daily.json`   | Daily averages since first data received    |
 
 ---
 
 ## API
 
-| Endpunkt                   | Beschreibung                               |
-|----------------------------|--------------------------------------------|
-| `GET /api/weather`         | Aktuellster Datensatz inkl. Tages-Min/Max  |
-| `GET /api/sparklines`      | Letzte 24h (minimale Payload)              |
-| `GET /api/history`         | Letzte ~4 Stunden (Rohdaten)               |
-| `GET /api/daily?from=&to=` | Tagesdurchschnitte nach Datum gefiltert    |
-| `POST /data/report/`       | Ecowitt Push-Empfänger                     |
+| Endpoint                   | Description                                  |
+|----------------------------|----------------------------------------------|
+| `GET /api/weather`         | Latest reading including today's min/max     |
+| `GET /api/sparklines`      | Last 24h (lightweight payload)               |
+| `GET /api/history`         | Last ~4 hours (raw readings)                 |
+| `GET /api/daily?from=&to=` | Daily averages filtered by date range        |
+| `POST /data/report/`       | Ecowitt push receiver                        |
