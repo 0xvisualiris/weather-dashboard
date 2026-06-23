@@ -617,7 +617,9 @@
 // Was: LAT=50.155, LON=9.335 (→ Bieber!)  Now: correct location
 const LAT = 50.237, LON = 9.158;
 // FIX 2: No more hardcoded DWD_STATION_ID — all calls use lat/lon
-const BRIGHTSKY = 'https://api.brightsky.dev';
+// All DWD calls go through the server proxy — gives us error logs and
+// avoids any browser-level fetch quirks.
+const DWD_API = '/api/dwd';
 
 // ── Translations ─────────────────────────────────────────────
 const TRANSLATIONS = {
@@ -895,8 +897,13 @@ function switchView(name) {
     el('t-'+v).ariaSelected   = v===name;
   });
   currentView = name;
-  if (name==='radar' && !mapInited)  { mapInited=true;   setTimeout(initMap,60); }
-  if (name==='dwd'   && !dwdLoaded)  { dwdLoaded=true;   loadDWDSparklines(); }
+  if (name==='radar' && !mapInited) { mapInited=true; setTimeout(initMap,60); }
+  if (name==='dwd') {
+    // Apply cached data immediately — refreshDWD() runs on page load while view
+    // is still 'eco', so lastDWD is set but applyDWDToUI was never called yet.
+    if (lastDWD) applyDWDToUI(lastDWD, lastDWDSrc);
+    if (!dwdLoaded) { dwdLoaded=true; loadDWDSparklines(); }
+  }
 }
 
 // ── FIX 3: Alert banner — always shows status ─────────────────
@@ -916,13 +923,20 @@ function updateAlertOkText() {
 async function refreshAlerts() {
   try {
     // FIX 2: use lat/lon — same coordinates as the station
-    const res = await fetch(`${BRIGHTSKY}/alerts?lat=${LAT}&lon=${LON}`);
+    const res = await fetch(`${DWD_API}/alerts`);
     if (!res.ok) throw new Error('HTTP '+res.status);
     const { alerts } = await res.json();
     const now = new Date();
-    const active = (alerts||[]).filter(a =>
-      a.onset && a.expires && new Date(a.onset)<=now && new Date(a.expires)>now
-    );
+    // Use 'effective' as fallback when 'onset' is null — DWD heat warnings
+    // (Wärmebelastung) frequently omit 'onset' and rely on 'effective' instead.
+    // Also include warnings that start within the next 60 minutes.
+    const soonCutoff = new Date(now.getTime() + 60 * 60000);
+    const active = (alerts||[]).filter(a => {
+      const start = new Date(a.onset ?? a.effective ?? 0);
+      const end   = new Date(a.expires ?? 0);
+      return !isNaN(start.getTime()) && !isNaN(end.getTime())
+          && start <= soonCutoff && end > now;
+    });
     // FIX 3: always update the ok text with current check time
     updateAlertOkText();
     if (active.length === 0) {
@@ -1078,7 +1092,7 @@ function applyEcoToUI(d, sparks) {
 async function refreshDWD() {
   try {
     // FIX 2: Use lat/lon — Bright Sky finds the nearest station automatically
-    const res = await fetch(`${BRIGHTSKY}/current_weather?lat=${LAT}&lon=${LON}`);
+    const res = await fetch(`${DWD_API}/current`);
     if (!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     lastDWD    = data.weather;
@@ -1153,7 +1167,7 @@ async function loadDWDSparklines() {
   try {
     const now=new Date(), ago=new Date(now-86400000);
     // FIX 2: lat/lon
-    const res = await fetch(`${BRIGHTSKY}/weather?lat=${LAT}&lon=${LON}&date=${ago.toISOString().slice(0,16)}&last_date=${now.toISOString().slice(0,16)}`);
+    const res = await fetch(`${DWD_API}/weather?date=${ago.toISOString().slice(0,16)}&last_date=${now.toISOString().slice(0,16)}`);
     const { weather } = await res.json();
     if (!weather) return;
     makeSpark('sp-dwd-temp',  weather.map(d=>d.temperature),                         '#fb923c');
@@ -1166,7 +1180,7 @@ async function loadDWDSparklines() {
 
 async function fetchDWDDailyHistory(from, to) {
   // FIX 2: lat/lon
-  const res = await fetch(`${BRIGHTSKY}/weather?lat=${LAT}&lon=${LON}&date=${from}T00:00:00&last_date=${to}T23:59:59`);
+  const res = await fetch(`${DWD_API}/weather?date=${from}T00:00:00&last_date=${to}T23:59:59`);
   const { weather } = await res.json();
   if (!weather) return [];
   const byDate = {};
