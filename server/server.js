@@ -6,6 +6,12 @@ const app         = express();
 const PORT        = 3000;
 const DATA_FILE   = '/data/weather.json';
 const DAILY_FILE  = '/data/daily.json';
+
+// Station coordinates — Gründau-Gettenbach
+const STATION_LAT = 50.237;
+const STATION_LON = 9.158;
+const BRIGHTSKY   = 'https://api.brightsky.dev';
+
 const MAX_HISTORY = 288; // ~24 h at 5-min intervals
 
 app.use(express.urlencoded({ extended: true }));
@@ -219,6 +225,55 @@ app.get('/api/daily', (req, res) => {
   if (from) result = result.filter(d => d.date >= from);
   if (to)   result = result.filter(d => d.date <= to);
   res.json(result);
+});
+
+// ── Bright Sky proxy routes ───────────────────────────────────
+// Routing DWD calls through the server avoids browser fetch issues
+// and gives us server-side logs for debugging.
+
+// Current weather from nearest DWD station
+app.get('/api/dwd/current', async (_req, res) => {
+  try {
+    const url = `${BRIGHTSKY}/current_weather?lat=${STATION_LAT}&lon=${STATION_LON}`;
+    const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    if (!r.ok) throw new Error(`Bright Sky responded ${r.status}`);
+    const data = await r.json();
+    res.json(data);
+  } catch (e) {
+    console.error('[DWD current]', e.message);
+    res.status(502).json({ error: e.message });
+  }
+});
+
+// Historical hourly weather (for sparklines and chart)
+app.get('/api/dwd/weather', async (req, res) => {
+  try {
+    const { date, last_date } = req.query;
+    const url = `${BRIGHTSKY}/weather?lat=${STATION_LAT}&lon=${STATION_LON}`
+              + (date      ? `&date=${date}`           : '')
+              + (last_date ? `&last_date=${last_date}` : '');
+    const r = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    if (!r.ok) throw new Error(`Bright Sky responded ${r.status}`);
+    const data = await r.json();
+    res.json(data);
+  } catch (e) {
+    console.error('[DWD weather]', e.message);
+    res.status(502).json({ error: e.message });
+  }
+});
+
+// Active weather alerts
+app.get('/api/dwd/alerts', async (_req, res) => {
+  try {
+    const url = `${BRIGHTSKY}/alerts?lat=${STATION_LAT}&lon=${STATION_LON}`;
+    const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    if (!r.ok) throw new Error(`Bright Sky responded ${r.status}`);
+    const data = await r.json();
+    res.json(data);
+  } catch (e) {
+    console.error('[DWD alerts]', e.message);
+    res.status(502).json({ error: e.message });
+  }
 });
 
 // ── Startup ───────────────────────────────────────────────────
