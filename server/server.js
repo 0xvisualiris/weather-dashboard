@@ -107,7 +107,7 @@ app.post('/data/report/', (req,res) => {
   }
   addToAccum(dayAccum,latestData);
   dataHistory.push({...latestData});
-  if(dataHistory.length>288)dataHistory.shift();
+  if(dataHistory.length>1440)dataHistory.shift(); // 24h at 60s = 1440
   try{fs.writeFileSync(DATA_FILE,JSON.stringify({latest:latestData,history:dataHistory,dayAccum}));}
   catch(e){logErr('Ecowitt',`Speicherfehler: ${e.message}`);}
   res.send('OK');
@@ -132,6 +132,18 @@ app.get('/api/daily',(req,res)=>{
   res.json(result);
 });
 
+
+// ── Raw history endpoint ──────────────────────────────────────
+// Returns individual push readings filtered to the last N hours.
+// Used by the chart modal for 6h/12h/24h raw-resolution graphs.
+app.get('/api/rawhistory',(req,res)=>{
+  const hours=Math.min(parseFloat(req.query.hours)||24,24);
+  const cutoff=Date.now()-hours*3600000;
+  const filtered=dataHistory.filter(d=>new Date(d.timestamp).getTime()>=cutoff);
+  logInfo('Raw',`${filtered.length} Punkte für die letzten ${hours}h`);
+  res.json(filtered);
+});
+
 // ── Bright Sky proxy ──────────────────────────────────────────
 async function bsFetch(url,tag) {
   const t0=Date.now();
@@ -152,6 +164,26 @@ app.get('/api/dwd/current',async(_req,res)=>{
   const{ok,data,error}=await bsFetch(`${BRIGHTSKY}/current_weather?lat=${STATION_LAT}&lon=${STATION_LON}`,'DWD-Curr');
   if(!ok)return res.status(502).json({error});
   const src=data.sources?.[0],w=data.weather;
+  // Bright Sky current_weather returns wind in m/s — convert to km/h
+  if(w){
+    if(w.wind_speed      !=null) w.wind_speed       = Math.round(w.wind_speed      *3.6*10)/10;
+    if(w.wind_gust_speed !=null) w.wind_gust_speed  = Math.round(w.wind_gust_speed *3.6*10)/10;
+  }
+  // Fallback: if wind still null, pull from last hourly observation
+  if(w && (w.wind_speed===null||w.wind_speed===undefined)){
+    logWarn('DWD-Curr','wind_speed null — hole Fallback aus Stunden-Daten');
+    const now=new Date(), ago=new Date(now-7200000);
+    const fb=await bsFetch(`${BRIGHTSKY}/weather?lat=${STATION_LAT}&lon=${STATION_LON}&date=${ago.toISOString().slice(0,16)}&last_date=${now.toISOString().slice(0,16)}`,'DWD-Wind');
+    if(fb.ok&&fb.data.weather){
+      const last=[...fb.data.weather].reverse().find(h=>h.wind_speed!=null);
+      if(last){
+        w.wind_speed      = last.wind_speed;       // already km/h in /weather endpoint
+        w.wind_gust_speed = last.wind_gust_speed;
+        w.wind_direction  = last.wind_direction;
+        logInfo('DWD-Curr',`Wind-Fallback: ${w.wind_speed}km/h aus ${last.timestamp}`);
+      }
+    }
+  }
   if(src&&w)logInfo('DWD-Curr',`Station:${src.station_name}  Temp:${w.temperature}°C  Wind:${w.wind_speed}km/h  Druck:${w.pressure_msl}hPa`);
   res.json(data);
 });
