@@ -205,6 +205,23 @@ app.get('/api/dwd/alerts',async(_req,res)=>{
   res.json(data);
 });
 
+app.get('/api/dwd/forecast', async (req, res) => {
+  // Returns the next 7 days of hourly forecast from DWD MOSMIX via Bright Sky.
+  // The /weather endpoint returns forecast data when the date range extends into the future.
+  const now  = new Date();
+  const from = new Date(now); from.setMinutes(0, 0, 0, 0); // round to current hour
+  const to   = new Date(from.getTime() + 7 * 24 * 3600000); // 7 days ahead
+  const url  = `${BRIGHTSKY}/weather?lat=${STATION_LAT}&lon=${STATION_LON}`
+             + `&date=${from.toISOString().slice(0,16)}`
+             + `&last_date=${to.toISOString().slice(0,16)}`;
+  const { ok, data, error } = await bsFetch(url, 'DWD-Fcast');
+  if (!ok) return res.status(502).json({ error });
+  const count = data.weather?.length ?? 0;
+  const fcCount = (data.weather || []).filter(w => new Date(w.timestamp) > now).length;
+  logInfo('DWD-Fcast', `${count} Stunden geladen · davon ${fcCount} Vorhersage`);
+  res.json(data);
+});
+
 // ── Startup ───────────────────────────────────────────────────
 try{if(fs.existsSync(DATA_FILE)){const s=JSON.parse(fs.readFileSync(DATA_FILE,'utf8'));latestData=s.latest||null;dataHistory=s.history||[];dayAccum=s.dayAccum||null;logOk('Server',`weather.json: ${dataHistory.length} Messwerte geladen`);}}catch(e){logErr('Server',`weather.json: ${e.message}`);}
 try{if(fs.existsSync(DAILY_FILE)){dailySummaries=JSON.parse(fs.readFileSync(DAILY_FILE,'utf8'));logOk('Server',`daily.json: ${dailySummaries.length} Tageszusammenfassungen geladen`);}}catch(e){logErr('Server',`daily.json: ${e.message}`);}
