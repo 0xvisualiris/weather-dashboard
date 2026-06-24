@@ -231,6 +231,9 @@
     .qbtn:hover { background:rgba(255,255,255,.1); color:var(--tx); }
     .qbtn.active { background:rgba(255,255,255,.12); color:var(--tx);
                    border-color:rgba(255,255,255,.3); }
+    .q-sep  { width:1px; background:rgba(255,255,255,.09); border-radius:1px; flex-shrink:0; }
+    .q-lbl  { font-size:.65rem; font-weight:700; letter-spacing:.08em; color:#475569;
+               align-self:center; padding:0 2px; }
     .cw { position:relative; height:250px; }
     .nodata { display:flex; flex-direction:column; align-items:center;
               justify-content:center; height:250px; color:var(--mu);
@@ -595,10 +598,16 @@
       <input type="date" id="dateTo">
       <button class="abtn" onclick="applyDateRange()" data-key="show">Anzeigen</button>
     </div>
-    <div class="qrow">
+    <div class="qrow" id="chartQrow">
+      <span class="q-lbl">RAW</span>
+      <button class="qbtn" id="q6h"  onclick="setQuickRaw(6)">6h</button>
+      <button class="qbtn" id="q12h" onclick="setQuickRaw(12)">12h</button>
+      <button class="qbtn" id="q24h" onclick="setQuickRaw(24)">24h</button>
+      <div class="q-sep"></div>
+      <span class="q-lbl" data-key="dailyLabel">TÄGLICH</span>
       <button class="qbtn" id="q7"   onclick="setQuick(7)"  data-key="days7">7 Tage</button>
       <button class="qbtn" id="q30"  onclick="setQuick(30)" data-key="days30">30 Tage</button>
-      <button class="qbtn" id="q90"  onclick="setQuick(90)" data-key="months3">3 Monate</button>
+      <button class="qbtn" id="q90"  onclick="setQuick(90)" data-key="months3">3 Mon.</button>
       <button class="qbtn" id="qall" onclick="setQuick(0)"  data-key="all">Alles</button>
     </div>
     <div class="cw">
@@ -651,7 +660,7 @@ const TRANSLATIONS = {
     uvSolar:'UV & Solarstrahlung', uvIndex:'UV-Index',
     uvLow:'Niedrig', uvMedium:'Mittel', uvHigh:'Hoch', uvVeryHigh:'Sehr hoch', uvExtreme:'Extrem',
     solarRadiation:'Solarstrahlung', dailyMax:'Tagesmax',
-    dwdUpdated:'Aktualisiert', dwdLoading:'Lade DWD-Daten…', dwdError:'Fehler',
+    dwdUpdated:'Aktualisiert', dwdLoading:'Lade DWD-Daten…', dailyLabel:'TÄGLICH', dwdError:'Fehler',
     temperature:'Temperatur', lastHour:'Letzte Stunde', last30min:'Letzte 30 Min.',
     sunshineToday:'Sonnenschein heute', visibilityTitle:'Sicht & Bewölkung',
     excellent:'Ausgezeichnet', good:'Gut', moderate:'Mäßig', poor:'Schlecht',
@@ -704,7 +713,7 @@ const TRANSLATIONS = {
     uvSolar:'UV & Solar Radiation', uvIndex:'UV Index',
     uvLow:'Low', uvMedium:'Medium', uvHigh:'High', uvVeryHigh:'Very high', uvExtreme:'Extreme',
     solarRadiation:'Solar radiation', dailyMax:'Daily max',
-    dwdUpdated:'Updated', dwdLoading:'Loading DWD data…', dwdError:'Error',
+    dwdUpdated:'Updated', dwdLoading:'Loading DWD data…', dailyLabel:'DAILY', dwdError:'Error',
     temperature:'Temperature', lastHour:'Last hour', last30min:'Last 30 min',
     sunshineToday:'Sunshine today', visibilityTitle:'Visibility & Clouds',
     excellent:'Excellent', good:'Good', moderate:'Moderate', poor:'Poor',
@@ -1271,12 +1280,73 @@ function chartConfigs() {
   };
 }
 
+// ── Raw mode state ───────────────────────────────────────────
+let rawMode=false, rawHours=6;
+
 function setActiveQuick(id) {
   document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('active'));
   if (id) el(id)?.classList.add('active');
 }
 
+// RAW quick buttons — show raw push data for short ranges
+async function setQuickRaw(hours) {
+  rawMode=true; rawHours=hours;
+  setActiveQuick('q'+hours+'h');
+  await fetchAndRenderRaw(hours);
+}
+
+// Raw history chart data mapper — Ecowitt
+function mapRawEco(rec) {
+  return {
+    label:        new Date(rec.timestamp).toLocaleTimeString(lang==='de'?'de-DE':'en-GB',{hour:'2-digit',minute:'2-digit'}),
+    outTemp:      rec.outdoor?.temp,
+    outHumi:      rec.outdoor?.humidity,
+    windSpeed:    rec.wind?.speed,
+    windSpeedMax: rec.wind?.gust,
+    rainRate:     rec.rain?.rate,   // raw mode shows rate, not daily total
+    rainDaily:    rec.rain?.rate,   // alias so chart configs can use rainDaily key
+    lightningCount: rec.lightning?.count,
+    pressure:     rec.pressure?.relative,
+    uvIndex:      rec.solar?.uv,
+    solarRad:     rec.solar?.radiation,
+  };
+}
+
+// Raw history chart data mapper — DWD hourly
+function mapRawDWD(rec) {
+  return {
+    label:        new Date(rec.timestamp).toLocaleTimeString(lang==='de'?'de-DE':'en-GB',{hour:'2-digit',minute:'2-digit'}),
+    outTemp:      rec.temperature,
+    outHumi:      rec.relative_humidity,
+    windSpeed:    rec.wind_speed,
+    windSpeedMax: rec.wind_gust_speed,
+    rainDaily:    rec.precipitation,
+    pressure:     rec.pressure_msl,
+    visibility:   rec.visibility!=null ? rec.visibility/1000 : null,
+  };
+}
+
+async function fetchAndRenderRaw(hours) {
+  const cfg = chartConfigs()[currentSensor];
+  let data = [];
+  try {
+    if (cfg.src==='eco') {
+      const r = await fetch(`/api/rawhistory?hours=${hours}`);
+      const raw = await r.json();
+      data = raw.map(mapRawEco);
+    } else {
+      // DWD: fetch hourly observations for the range
+      const now=new Date(), from=new Date(now-hours*3600000);
+      const r = await fetch(`/api/dwd/weather?date=${from.toISOString().slice(0,16)}&last_date=${now.toISOString().slice(0,16)}`);
+      const json = await r.json();
+      data = (json.weather||[]).map(mapRawDWD);
+    }
+  } catch(_){}
+  renderChart(data, true);
+}
+
 async function fetchAndRender() {
+  rawMode=false;
   const from=el('dateFrom').value, to=el('dateTo').value;
   if (!from||!to) return;
   const cfg = chartConfigs()[currentSensor];
@@ -1285,10 +1355,10 @@ async function fetchAndRender() {
     if (cfg.src==='dwd') { data=await fetchDWDDailyHistory(from,to); }
     else { const r=await fetch(`/api/daily?from=${from}&to=${to}`); data=await r.json(); }
   } catch(_){}
-  renderChart(data);
+  renderChart(data, false);
 }
 
-function renderChart(data) {
+function renderChart(data, isRaw=false) {
   const cfg = chartConfigs()[currentSensor];
   if (activeChart){activeChart.destroy();activeChart=null;}
   const canvas=el('histChart'), noData=el('noDataMsg'), leg=el('chartLegend');
@@ -1296,37 +1366,57 @@ function renderChart(data) {
     canvas.style.display='none'; noData.style.display='flex'; leg.innerHTML=''; return;
   }
   canvas.style.display='block'; noData.style.display='none';
-  const srcLabel=cfg.src==='dwd'?t('dwdSrc'):t('ecoSrc');
-  el('modalSub').textContent=`${fmtLabel(data[0].date)} – ${fmtLabel(data[data.length-1].date)} · ${data.length} ${t('daysLabel')} · ${srcLabel}`;
-  const step=Math.max(1,Math.floor(data.length/10));
-  const labels=data.map((d,i)=>i%step===0?fmtLabel(d.date):'');
+
+  // Sub-title: raw mode shows time range + point count; daily shows date range
+  if (isRaw) {
+    const srcLabel=cfg.src==='dwd'?'DWD Stundendaten':'Ecowitt Rohdaten';
+    el('modalSub').textContent=`Letzte ${rawHours}h · ${data.length} Messwerte · ${srcLabel}`;
+  } else {
+    const srcLabel=cfg.src==='dwd'?t('dwdSrc'):t('ecoSrc');
+    el('modalSub').textContent=`${fmtLabel(data[0].date)} – ${fmtLabel(data[data.length-1].date)} · ${data.length} ${t('daysLabel')} · ${srcLabel}`;
+  }
+
+  // Labels: raw uses pre-formatted HH:MM strings; daily uses date strings
+  const step = isRaw ? Math.max(1,Math.floor(data.length/12)) : Math.max(1,Math.floor(data.length/10));
+  const labels = isRaw
+    ? data.map((d,i)=>i%step===0?d.label:'')
+    : data.map((d,i)=>i%step===0?fmtLabel(d.date):'');
+
   const isBar=!!cfg.bar;
   const hasDual=cfg.datasets.some(d=>d.yID==='y1');
+  // In raw mode, show individual points when count is manageable; thin line otherwise
+  const ptRadius = isRaw ? (data.length<120?1.5:0) : (data.length<15?3:0);
+  const lineW    = isRaw ? 1.2 : 1.5;
+
   const datasets=cfg.datasets.map(ds=>({
     label:ds.label,data:data.map(d=>d[ds.key]??null),
     borderColor:ds.color,backgroundColor:isBar?ds.color+'bb':ds.color+'22',
-    borderWidth:isBar?0:1.5,pointRadius:data.length<15?3:0,
-    fill:!isBar,tension:.35,yAxisID:ds.yID,spanGaps:true,
+    borderWidth:isBar?0:lineW,pointRadius:ptRadius,
+    fill:!isBar,tension:isRaw?.2:.35,yAxisID:ds.yID,spanGaps:true,
   }));
   const sc={x:{ticks:{color:'#94a3b8',font:{size:11},maxRotation:0},grid:{color:'rgba(255,255,255,.04)'},border:{color:'rgba(255,255,255,.08)'}},y:{position:'left',ticks:{color:cfg.datasets[0].color,font:{size:11}},grid:{color:'rgba(255,255,255,.04)'},border:{color:'rgba(255,255,255,.08)'}}};
   if(hasDual) sc.y1={position:'right',ticks:{color:cfg.datasets[1].color,font:{size:11}},grid:{drawOnChartArea:false},border:{color:'rgba(255,255,255,.08)'}};
   activeChart=new Chart(canvas,{type:isBar?'bar':'line',data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a2332',titleColor:'#94a3b8',bodyColor:'#f1f5f9',borderColor:'rgba(255,255,255,.1)',borderWidth:1,callbacks:{label(ctx){const u=cfg.datasets[ctx.datasetIndex].unit;return ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(1)}${u?' '+u:''}`;}}}},scales:sc}});
-  leg.innerHTML=cfg.datasets.map(ds=>`<span class="li"><span class="ld" style="background:${ds.color}"></span>${ds.label}${ds.unit?' ('+ds.unit+')':''}</span>`).join('');
+  leg.innerHTML=cfg.datasets.map(ds=>`<span class="li"><span class="ld" style="background:${ds.color}"></span>${ds.label}${ds.unit?' ('+ds.unit+')':''}</span>`).join('')
+    + (isRaw?`<span style="margin-left:auto;font-size:.7rem;color:#475569">Auflösung: ${cfg.src==='eco'?'60s (jeder Push)':'60 Min. (DWD)'}</span>`:'');
 }
 
 function openChart(sensor) {
   currentSensor=sensor;
+  rawMode=false; rawHours=6;
   set('modalTitle', chartConfigs()[sensor].title);
   set('modalSub','');
   el('dateFrom').value=daysAgoStr(30);
   el('dateTo').value=todayStr();
-  setActiveQuick('q30');
   el('chartModal').classList.add('open');
-  fetchAndRender();
+  // Default: 6h raw for a crisp first view
+  setActiveQuick('q6h');
+  setQuickRaw(6);
 }
 function closeChart(){el('chartModal').classList.remove('open');if(activeChart){activeChart.destroy();activeChart=null;}}
-function applyDateRange(){setActiveQuick(null);fetchAndRender();}
+function applyDateRange(){rawMode=false;setActiveQuick(null);fetchAndRender();}
 function setQuick(days){
+  rawMode=false;
   el('dateFrom').value=days===0?'2000-01-01':daysAgoStr(days);
   el('dateTo').value=todayStr();
   setActiveQuick(days===7?'q7':days===30?'q30':days===90?'q90':days===0?'qall':null);
