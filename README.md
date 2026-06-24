@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="server/public/logo.svg" width="96" height="96" alt="Wetterstation Gründau Logo">
+</p>
+
 # Wetterstation Gründau 🌦️
 
 A self-hosted personal weather dashboard for my Ecowitt weather station in my village.
