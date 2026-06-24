@@ -244,6 +244,58 @@
     .li { display:flex; align-items:center; gap:5px; }
     .ld { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
 
+
+    /* ── Forecast sections ──────────────────────────────────── */
+    .fc-wrap  { max-width:1100px; margin:0 auto 1rem; }
+    .fc-hdr   { display:flex; align-items:center; gap:8px; margin-bottom:.55rem; padding:0 2px; }
+    .fc-title { font-size:.72rem; font-weight:700; text-transform:uppercase;
+                letter-spacing:.08em; color:var(--mu); }
+    .fc-hint  { font-size:.7rem; color:#334155; margin-left:auto; }
+
+    /* Hourly scroll strip */
+    .h-scroll { display:flex; gap:6px; overflow-x:auto; padding-bottom:6px;
+                scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.12) transparent;
+                -webkit-overflow-scrolling:touch; }
+    .h-scroll::-webkit-scrollbar       { height:4px; }
+    .h-scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:2px; }
+
+    .h-card { flex-shrink:0; width:74px; background:var(--card); border:1px solid var(--brd);
+              border-radius:14px; padding:10px 6px; display:flex; flex-direction:column;
+              align-items:center; gap:5px; position:relative; transition:border-color .15s; }
+    .h-card.now { border-color:rgba(96,165,250,.4);
+                  background:linear-gradient(160deg,#111827,#0d1829); }
+    .h-card.now::before { content:''; position:absolute; top:0; left:0; right:0; height:2px;
+                          border-radius:14px 14px 0 0;
+                          background:linear-gradient(90deg,#60a5fa,#a78bfa); }
+    .h-time { font-size:.65rem; font-weight:700; color:var(--mu); }
+    .h-card.now .h-time { color:#60a5fa; }
+    .h-ico  { font-size:1.4rem; line-height:1; }
+    .h-temp { font-size:.9rem; font-weight:600; color:var(--tx); }
+    .h-rain { font-size:.6rem; color:#22d3ee; min-height:14px; }
+    .h-wind { font-size:.58rem; color:var(--mu); }
+
+    /* 7-day grid */
+    .d-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+    @media (max-width:640px) { .d-grid { grid-template-columns:repeat(4,1fr); } }
+
+    .d-card { background:var(--card); border:1px solid var(--brd); border-radius:14px;
+              padding:10px 6px; display:flex; flex-direction:column;
+              align-items:center; gap:4px; transition:border-color .15s; }
+    .d-card.today { border-color:rgba(96,165,250,.35); }
+    .d-day { font-size:.65rem; font-weight:700; color:var(--mu);
+             text-transform:uppercase; letter-spacing:.05em; }
+    .d-card.today .d-day { color:#60a5fa; }
+    .d-ico { font-size:1.4rem; line-height:1; }
+    .d-hi  { font-size:.85rem; font-weight:600; color:#f97316; }
+    .d-lo  { font-size:.75rem; color:#60a5fa; }
+    .d-rain{ font-size:.6rem; color:#22d3ee; min-height:12px; }
+
+    /* Skeleton shimmer */
+    .fc-skel { background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,
+                rgba(255,255,255,.09) 50%,rgba(255,255,255,.04) 100%);
+               background-size:200% 100%; animation:fcShimmer 1.5s infinite; border-radius:7px; }
+    @keyframes fcShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
     footer { text-align:center; margin-top:2rem; color:var(--mu);
              font-size:.75rem; opacity:.7; }
     @media(max-width:480px) {
@@ -342,6 +394,31 @@
         <div class="sunrow">🌅 <b id="sunrise">--:--</b></div>
         <div class="sunrow">🌇 <b id="sunset">--:--</b></div>
       </div>
+    </div>
+  </div>
+
+
+  <!-- ══ Hourly forecast (next 24h) ══ -->
+  <div class="fc-wrap">
+    <div class="fc-hdr">
+      <span style="font-size:1rem">🕐</span>
+      <span class="fc-title" data-key="hourlyTitle">Nächste 24 Stunden</span>
+      <span class="fc-hint" id="hourlyHint" data-key="loading">Lade…</span>
+    </div>
+    <div class="h-scroll" id="hourlyStrip">
+      <!-- skeleton cards injected by JS -->
+    </div>
+  </div>
+
+  <!-- ══ 7-day forecast ══ -->
+  <div class="fc-wrap">
+    <div class="fc-hdr">
+      <span style="font-size:1rem">📅</span>
+      <span class="fc-title" data-key="dailyFcTitle">7-Tage-Vorhersage</span>
+      <span class="fc-hint" id="dailyHint" style="font-size:.68rem;color:#334155">DWD MOSMIX via Bright Sky</span>
+    </div>
+    <div class="d-grid" id="dailyGrid">
+      <!-- skeleton cards injected by JS -->
     </div>
   </div>
 
@@ -684,7 +761,8 @@ const TRANSLATIONS = {
     dsAvgTemp:'Ø Temperatur', dsAvgHumi:'Ø Luftfeuchtigkeit', dsAvgWind:'Ø Wind', dsMaxGust:'Max. Böe',
     dsRain:'Niederschlag', dsStrikes:'Blitze', dsPressure:'Luftdruck', dsVis:'Sichtweite',
     dsUV:'Ø UV-Index', dsSolar:'Ø Solarstrahlung',
-    footer:'Gründau · Ecowitt alle 30s · DWD alle 10 Min.',
+    hourlyTitle:'Nächste 24 Stunden', dailyFcTitle:'7-Tage-Vorhersage', loading:'Lade…',
+    footer:'Gründau · Ecowitt alle 30s · DWD alle 10 Min. · Vorhersage: DWD MOSMIX',
     condSunny:'Heiter', condPartly:'Leicht bewölkt', condOvercast:'Bewölkt',
     condLightRain:'Leichter Regen', condHeavyRain:'Starkregen', condStorm:'Gewitter', condNight:'Nacht',
     bft0:'Windstille',bft1:'Leiser Zug',bft2:'Leichte Brise',bft3:'Schwache Brise',
@@ -737,7 +815,8 @@ const TRANSLATIONS = {
     dsAvgTemp:'Ø Temperature', dsAvgHumi:'Ø Humidity', dsAvgWind:'Ø Wind', dsMaxGust:'Max gust',
     dsRain:'Precipitation', dsStrikes:'Strikes', dsPressure:'Pressure', dsVis:'Visibility',
     dsUV:'Ø UV Index', dsSolar:'Ø Solar radiation',
-    footer:'Gründau · Ecowitt every 30s · DWD every 10 min',
+    hourlyTitle:'Next 24 Hours', dailyFcTitle:'7-Day Forecast', loading:'Loading…',
+    footer:'Gründau · Ecowitt every 30s · DWD every 10 min · Forecast: DWD MOSMIX',
     condSunny:'Sunny', condPartly:'Partly cloudy', condOvercast:'Cloudy',
     condLightRain:'Light rain', condHeavyRain:'Heavy rain', condStorm:'Thunderstorm', condNight:'Night',
     bft0:'Calm',bft1:'Light air',bft2:'Light breeze',bft3:'Gentle breeze',
@@ -782,6 +861,8 @@ function setLang(newLang) {
   applyStaticTranslations();
   if (lastData)  applyEcoToUI(lastData, lastSparks);
   if (lastDWD)   applyDWDToUI(lastDWD, lastDWDSrc);
+  // Re-render forecast day labels in new language (data already cached in DOM)
+  refreshForecast();
 }
 
 applyStaticTranslations();
@@ -1425,6 +1506,152 @@ function setQuick(days){
 el('chartModal').addEventListener('click',function(e){if(e.target===this)closeChart();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeChart();});
 
+
+// ── Forecast constants ────────────────────────────────────────
+const WX_ICONS = {
+  'clear-day':'☀️','clear-night':'🌙',
+  'partly-cloudy-day':'⛅','partly-cloudy-night':'🌑',
+  'cloudy':'☁️','fog':'🌫️','wind':'💨',
+  'rain':'🌧️','sleet':'🌨️','snow':'❄️',
+  'hail':'🌩️','thunderstorm':'⛈️',
+};
+const DAYS_DE = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+const DAYS_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function wxIcon(key)    { return WX_ICONS[key] || '🌡️'; }
+function isNowHour(iso) {
+  const d=new Date(iso), n=new Date();
+  return d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth()
+      && d.getDate()===n.getDate()     && d.getHours()===n.getHours();
+}
+function isTodayDate(iso) {
+  const d=new Date(iso), n=new Date();
+  return d.getDate()===n.getDate() && d.getMonth()===n.getMonth();
+}
+
+// Skeleton markup
+function buildHourlySkeleton(count=16) {
+  const skel = '<div style="width:32px;height:9px;border-radius:5px;margin-bottom:2px" class="fc-skel"></div>';
+  const ico  = '<div style="width:28px;height:28px;border-radius:50%;margin:3px 0" class="fc-skel"></div>';
+  const val  = '<div style="width:34px;height:13px;border-radius:6px" class="fc-skel"></div>';
+  const sub  = '<div style="width:24px;height:9px;border-radius:5px;margin-top:2px" class="fc-skel"></div>';
+  return Array(count).fill(null).map(()=>`<div class="h-card">${skel}${ico}${val}${sub}</div>`).join('');
+}
+function buildDailySkeleton(count=7) {
+  const lbl  = '<div style="width:26px;height:9px;border-radius:5px" class="fc-skel"></div>';
+  const ico  = '<div style="width:30px;height:30px;border-radius:50%;margin:4px 0" class="fc-skel"></div>';
+  const hi   = '<div style="width:32px;height:13px;border-radius:6px" class="fc-skel"></div>';
+  const lo   = '<div style="width:26px;height:11px;border-radius:5px;margin-top:2px" class="fc-skel"></div>';
+  return Array(count).fill(null).map(()=>`<div class="d-card">${lbl}${ico}${hi}${lo}</div>`).join('');
+}
+
+// ── Fetch + render forecast ───────────────────────────────────
+async function refreshForecast() {
+  // Show skeletons
+  el('hourlyStrip').innerHTML = buildHourlySkeleton(16);
+  el('dailyGrid').innerHTML   = buildDailySkeleton(7);
+  el('hourlyHint').textContent = t('loading');
+
+  try {
+    const res = await fetch(`${DWD_API}/forecast`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const { weather, sources } = await res.json();
+    if (!weather?.length) throw new Error('no data');
+
+    const src = sources?.[0];
+    renderHourly(weather);
+    renderDailyFc(weather);
+
+    const stName = src?.station_name || 'DWD';
+    const dist   = src?.distance ? `~${Math.round(src.distance/1000)} km` : '';
+    el('hourlyHint').textContent = `${stName}${dist ? ' · ' + dist : ''}`;
+  } catch (e) {
+    el('hourlyStrip').innerHTML = `<div style="color:#f87171;font-size:.75rem;padding:.5rem 0">Vorhersage nicht verfügbar: ${e.message}</div>`;
+    el('hourlyHint').textContent = '';
+  }
+}
+
+function renderHourly(weather) {
+  const now     = Date.now();
+  const next25h = weather.filter(w => {
+    const ts = new Date(w.timestamp).getTime();
+    return ts >= now && ts <= now + 25 * 3600000;
+  });
+
+  const strip = el('hourlyStrip');
+  strip.innerHTML = '';
+  let scrollTarget = null;
+
+  next25h.forEach(w => {
+    const isNow  = isNowHour(w.timestamp);
+    const card   = document.createElement('div');
+    card.className = 'h-card' + (isNow ? ' now' : '');
+
+    const rain   = (w.precipitation || 0);
+    const windKmh= w.wind_speed != null ? Math.round(w.wind_speed) : null;
+    const timeLabel = isNow
+      ? (lang === 'de' ? 'Jetzt' : 'Now')
+      : new Date(w.timestamp).toLocaleTimeString(lang==='de'?'de-DE':'en-GB', {hour:'2-digit', minute:'2-digit'});
+
+    card.innerHTML = [
+      `<div class="h-time">${timeLabel}</div>`,
+      `<div class="h-ico">${wxIcon(w.icon)}</div>`,
+      `<div class="h-temp">${w.temperature != null ? Number(w.temperature).toFixed(1)+'°' : '--'}</div>`,
+      `<div class="h-rain">${rain > 0 ? rain.toFixed(1)+' mm' : ''}</div>`,
+      `<div class="h-wind">${windKmh != null ? windKmh+' km/h' : ''}</div>`,
+    ].join('');
+
+    strip.appendChild(card);
+    if (isNow) scrollTarget = card;
+  });
+
+  // Scroll "Jetzt" card into view after render
+  if (scrollTarget) {
+    setTimeout(() => scrollTarget.scrollIntoView({behavior:'smooth', block:'nearest', inline:'start'}), 350);
+  }
+}
+
+function renderDailyFc(weather) {
+  // Group by local calendar date
+  const byDate = {};
+  weather.forEach(w => {
+    const d   = new Date(w.timestamp);
+    const key = d.toLocaleDateString('en-CA');
+    if (!byDate[key]) byDate[key] = { date: d, hours: [] };
+    byDate[key].hours.push(w);
+  });
+
+  const days = Object.values(byDate).slice(0, 7);
+  const grid = el('dailyGrid');
+  grid.innerHTML = '';
+
+  days.forEach(({ date, hours }) => {
+    const temps = hours.map(h => h.temperature).filter(v => v != null);
+    const tmax  = temps.length ? Math.max(...temps).toFixed(1) : '--';
+    const tmin  = temps.length ? Math.min(...temps).toFixed(1) : '--';
+    const rain  = hours.reduce((s, h) => s + (h.precipitation || 0), 0);
+
+    // Pick icon from midday hours (10-15) for a representative symbol
+    const midday = hours.filter(h => { const hr=new Date(h.timestamp).getHours(); return hr>=10 && hr<=15; });
+    const ico    = wxIcon((midday[0] || hours[0])?.icon);
+
+    const isToday = isTodayDate(date.toISOString());
+    const dayNames = lang === 'de' ? DAYS_DE : DAYS_EN;
+    const dayLabel = isToday ? (lang==='de'?'Heute':'Today') : dayNames[date.getDay()];
+
+    const card = document.createElement('div');
+    card.className = 'd-card' + (isToday ? ' today' : '');
+    card.innerHTML = [
+      `<div class="d-day">${dayLabel}</div>`,
+      `<div class="d-ico">${ico}</div>`,
+      `<div class="d-hi">${tmax}°</div>`,
+      `<div class="d-lo">${tmin}°</div>`,
+      `<div class="d-rain">${rain > 0 ? rain.toFixed(1)+' mm' : ''}</div>`,
+    ].join('');
+    grid.appendChild(card);
+  });
+}
+
 // ── Start ─────────────────────────────────────────────────────
 // ── Restore last active tab before first fetch ───────────────
 const _savedTab = localStorage.getItem('wg_tab') || 'eco';
@@ -1438,6 +1665,10 @@ setInterval(refreshDWD, 600000);
 
 refreshAlerts();
 setInterval(refreshAlerts, 300000);
+
+// Forecast: load immediately, refresh every 30 minutes
+refreshForecast();
+setInterval(refreshForecast, 1800000);
 </script>
 </body>
 </html>
