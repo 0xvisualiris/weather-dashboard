@@ -296,6 +296,59 @@
                background-size:200% 100%; animation:fcShimmer 1.5s infinite; border-radius:7px; }
     @keyframes fcShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
+
+    /* ── Section headers ────────────────────────────────────── */
+    .sec-hdr   { display:flex; align-items:center; gap:8px; max-width:1100px;
+                 margin:1.4rem auto .6rem; padding:0 2px; }
+    .sec-emoji { font-size:1.1rem; line-height:1; }
+    .sec-title { font-size:.9rem; font-weight:700; color:var(--tx); }
+    .sec-sub   { font-size:.72rem; color:#475569; margin-left:auto; }
+
+    /* Clickable day cards */
+    .d-card           { cursor:pointer; transition:border-color .15s,background .15s,transform .1s; }
+    .d-card:hover     { border-color:rgba(255,255,255,.2); background:#161f2e; transform:translateY(-1px); }
+    .d-card.selected  { border-color:#60a5fa; background:rgba(96,165,250,.1); }
+    .d-click-hint     { font-size:.55rem; color:#334155; margin-top:2px; }
+
+    /* Day detail modal */
+    #dayModal .mbox   { overflow:hidden; }
+    .dmod-hdr         { padding:1.5rem 1.5rem 1rem;
+                        background:linear-gradient(135deg,#0d1829 0%,#111827 100%);
+                        border-bottom:1px solid rgba(255,255,255,.07); }
+    .dmod-top         { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:.75rem; }
+    .dmod-day         { font-size:1.4rem; font-weight:700; color:var(--tx); }
+    .dmod-date        { font-size:.82rem; color:var(--mu); margin-top:3px; }
+    .dmod-ico         { font-size:3.5rem; line-height:1; }
+    .dmod-temps       { display:flex; align-items:baseline; gap:.85rem; margin-top:.5rem; }
+    .dmod-hi          { font-size:2.4rem; font-weight:200; color:#f97316; line-height:1; }
+    .dmod-lo          { font-size:1.4rem; font-weight:300; color:#60a5fa; }
+    .dmod-sep         { color:var(--mu); font-size:1.2rem; }
+    .dmod-close       { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+                        color:var(--mu); border-radius:8px; padding:6px 10px; cursor:pointer;
+                        font-family:inherit; font-size:.82rem; display:flex; align-items:center; gap:5px; }
+    .dmod-close:hover { background:rgba(255,255,255,.14); color:var(--tx); }
+    .dmod-stats       { display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr));
+                        gap:.6rem; padding:1rem 1.5rem; border-bottom:1px solid rgba(255,255,255,.06); }
+    .dstat            { background:rgba(255,255,255,.03); border-radius:10px; padding:.6rem .75rem; }
+    .dstat-label      { font-size:.62rem; color:var(--mu); font-weight:600; text-transform:uppercase;
+                        letter-spacing:.06em; margin-bottom:3px; }
+    .dstat-val        { font-size:.95rem; font-weight:600; color:var(--tx); }
+    .dmod-chart       { padding:1rem 1.5rem .5rem; }
+    .dmod-cht-title   { font-size:.72rem; font-weight:700; text-transform:uppercase;
+                        letter-spacing:.08em; color:var(--mu); margin-bottom:.6rem; }
+    .dmod-cw          { height:180px; position:relative; }
+    .dmod-list        { padding:.5rem 1.5rem 1.5rem; }
+    .dmod-lst-title   { font-size:.72rem; font-weight:700; text-transform:uppercase;
+                        letter-spacing:.08em; color:var(--mu); margin-bottom:.6rem; }
+    .dmod-row         { display:flex; align-items:center; gap:10px; padding:.45rem 0;
+                        border-bottom:1px solid rgba(255,255,255,.04); font-size:.8rem; }
+    .dmod-row:last-child { border-bottom:none; }
+    .dmod-rtime       { width:42px; font-weight:600; color:var(--mu); flex-shrink:0; }
+    .dmod-rico        { width:24px; text-align:center; font-size:1rem; flex-shrink:0; }
+    .dmod-rtemp       { width:46px; font-weight:600; color:var(--tx); flex-shrink:0; }
+    .dmod-rrain       { width:50px; color:#22d3ee; flex-shrink:0; font-size:.72rem; }
+    .dmod-rwind       { color:var(--mu); font-size:.72rem; margin-left:auto; }
+
     footer { text-align:center; margin-top:2rem; color:var(--mu);
              font-size:.75rem; opacity:.7; }
     @media(max-width:480px) {
@@ -359,15 +412,15 @@
 <!-- ── Tabs ── -->
 <div class="tabs" role="tablist">
   <button class="tab active" id="t-eco"   onclick="switchView('eco')"   role="tab" aria-selected="true">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    <span style="font-size:1rem" aria-hidden="true">🏠</span>
     <span data-key="tabEco">Meine Station</span>
   </button>
   <button class="tab" id="t-dwd" onclick="switchView('dwd')" role="tab" aria-selected="false">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+    <span style="font-size:1rem" aria-hidden="true">🌡️</span>
     <span data-key="tabDWD">DWD Station</span>
   </button>
   <button class="tab" id="t-radar" onclick="switchView('radar')" role="tab" aria-selected="false">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+    <span style="font-size:1rem" aria-hidden="true">🛰️</span>
     <span data-key="tabRadar">Regenradar</span>
   </button>
 </div>
@@ -398,28 +451,11 @@
   </div>
 
 
-  <!-- ══ Hourly forecast (next 24h) ══ -->
-  <div class="fc-wrap">
-    <div class="fc-hdr">
-      <span style="font-size:1rem">🕐</span>
-      <span class="fc-title" data-key="hourlyTitle">Nächste 24 Stunden</span>
-      <span class="fc-hint" id="hourlyHint" data-key="loading">Lade…</span>
-    </div>
-    <div class="h-scroll" id="hourlyStrip">
-      <!-- skeleton cards injected by JS -->
-    </div>
-  </div>
-
-  <!-- ══ 7-day forecast ══ -->
-  <div class="fc-wrap">
-    <div class="fc-hdr">
-      <span style="font-size:1rem">📅</span>
-      <span class="fc-title" data-key="dailyFcTitle">7-Tage-Vorhersage</span>
-      <span class="fc-hint" id="dailyHint" style="font-size:.68rem;color:#334155">DWD MOSMIX via Bright Sky</span>
-    </div>
-    <div class="d-grid" id="dailyGrid">
-      <!-- skeleton cards injected by JS -->
-    </div>
+  <!-- Section header: Ecowitt data -->
+  <div class="sec-hdr">
+    <span class="sec-emoji">📡</span>
+    <span class="sec-title" data-key="ecoSecTitle">Ecowitt Sensordaten</span>
+    <span class="sec-sub">Live · Gründau-Gettenbach</span>
   </div>
 
   <div class="grid">
@@ -541,12 +577,19 @@
 
 <!-- ════════════ DWD VIEW ════════════ -->
 <div id="v-dwd" style="display:none">
-  <!-- FIX 2: station name populated dynamically from API response -->
   <div class="sbar" id="dwdSbar">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
     <span id="dwdStationName" data-key="dwdLoading">Lade DWD-Daten…</span>
     <span style="margin-left:auto"><span data-key="dwdUpdated">Aktualisiert</span>: <b id="dwdLastUpdate" style="color:#4ade80">--:--</b></span>
   </div>
+
+  <!-- Section: current observation -->
+  <div class="sec-hdr">
+    <span class="sec-emoji">📊</span>
+    <span class="sec-title" data-key="obsTitle">Aktuelle Beobachtung</span>
+    <span class="sec-sub" id="dwdObsHint">via DWD Open Data</span>
+  </div>
+
   <div class="grid">
     <!-- DWD Temp -->
     <div class="card outdoor">
@@ -639,6 +682,30 @@
       <div class="spark" id="sp-dwd-vis"></div>
     </div>
   </div>
+  <!-- Section: Nächste 24 Stunden -->
+  <div class="sec-hdr" style="margin-top:1.5rem">
+    <span class="sec-emoji">🕐</span>
+    <span class="sec-title" data-key="hourlyTitle">Nächste 24 Stunden</span>
+    <span class="sec-sub" id="hourlyHint" data-key="loading">Lade…</span>
+  </div>
+  <div class="fc-wrap" style="margin-top:0">
+    <div class="h-scroll" id="hourlyStrip">
+      <!-- skeleton cards injected by JS -->
+    </div>
+  </div>
+
+  <!-- Section: 7-Tage-Vorhersage (clickable days) -->
+  <div class="sec-hdr">
+    <span class="sec-emoji">📅</span>
+    <span class="sec-title" data-key="dailyFcTitle">7-Tage-Vorhersage</span>
+    <span class="sec-sub" data-key="clickForDetails">Klick auf einen Tag für Details</span>
+  </div>
+  <div class="fc-wrap" style="margin-top:0">
+    <div class="d-grid" id="dailyGrid">
+      <!-- skeleton cards injected by JS -->
+    </div>
+  </div>
+
   <div style="text-align:center;margin-top:.75rem;font-size:.71rem;color:var(--mu)" data-key="dwdSource">
     Daten: DWD Open Data via Bright Sky API · Kostenlos, keine Lizenz erforderlich
   </div>
@@ -761,7 +828,7 @@ const TRANSLATIONS = {
     dsAvgTemp:'Ø Temperatur', dsAvgHumi:'Ø Luftfeuchtigkeit', dsAvgWind:'Ø Wind', dsMaxGust:'Max. Böe',
     dsRain:'Niederschlag', dsStrikes:'Blitze', dsPressure:'Luftdruck', dsVis:'Sichtweite',
     dsUV:'Ø UV-Index', dsSolar:'Ø Solarstrahlung',
-    hourlyTitle:'Nächste 24 Stunden', dailyFcTitle:'7-Tage-Vorhersage', loading:'Lade…',
+    hourlyTitle:'Nächste 24 Stunden', dailyFcTitle:'7-Tage-Vorhersage', loading:'Lade…', ecoSecTitle:'Ecowitt Sensordaten', obsTitle:'Aktuelle Beobachtung', clickForDetails:'Klick auf einen Tag für Details', close:'Schließen',
     footer:'Gründau · Ecowitt alle 30s · DWD alle 10 Min. · Vorhersage: DWD MOSMIX',
     condSunny:'Heiter', condPartly:'Leicht bewölkt', condOvercast:'Bewölkt',
     condLightRain:'Leichter Regen', condHeavyRain:'Starkregen', condStorm:'Gewitter', condNight:'Nacht',
@@ -815,7 +882,7 @@ const TRANSLATIONS = {
     dsAvgTemp:'Ø Temperature', dsAvgHumi:'Ø Humidity', dsAvgWind:'Ø Wind', dsMaxGust:'Max gust',
     dsRain:'Precipitation', dsStrikes:'Strikes', dsPressure:'Pressure', dsVis:'Visibility',
     dsUV:'Ø UV Index', dsSolar:'Ø Solar radiation',
-    hourlyTitle:'Next 24 Hours', dailyFcTitle:'7-Day Forecast', loading:'Loading…',
+    hourlyTitle:'Next 24 Hours', dailyFcTitle:'7-Day Forecast', loading:'Loading…', ecoSecTitle:'Ecowitt Station Data', obsTitle:'Current Observation', clickForDetails:'Click a day for details', close:'Close',
     footer:'Gründau · Ecowitt every 30s · DWD every 10 min · Forecast: DWD MOSMIX',
     condSunny:'Sunny', condPartly:'Partly cloudy', condOvercast:'Cloudy',
     condLightRain:'Light rain', condHeavyRain:'Heavy rain', condStorm:'Thunderstorm', condNight:'Night',
@@ -827,6 +894,9 @@ const TRANSLATIONS = {
 
 // ── State ─────────────────────────────────────────────────────
 let lang         = localStorage.getItem('wg_lang') || 'de';
+let selectedDayKey = null;   // currently selected day in the forecast
+let dayChart       = null;   // Chart.js instance for the day detail modal
+let lastFcData     = [];     // cached forecast weather array for re-renders
 let lastData     = null;
 let lastSparks   = [];
 let lastDWD      = null;
@@ -861,8 +931,15 @@ function setLang(newLang) {
   applyStaticTranslations();
   if (lastData)  applyEcoToUI(lastData, lastSparks);
   if (lastDWD)   applyDWDToUI(lastDWD, lastDWDSrc);
-  // Re-render forecast day labels in new language (data already cached in DOM)
-  refreshForecast();
+  // Re-render forecast day labels in new language using cached data
+  if (lastFcData.length) {
+    renderHourly(lastFcData);
+    renderDailyFc(lastFcData);
+  }
+  // Re-render open day modal in new language if open
+  if (el('dayModal').classList.contains('open') && selectedDayKey) {
+    closeDay();
+  }
 }
 
 applyStaticTranslations();
@@ -987,6 +1064,10 @@ function makeSpark(containerId, data, color) {
 
 // ── View switching ────────────────────────────────────────────
 function switchView(name) {
+  // Load forecast the first time the DWD tab is opened
+  if (name === 'dwd' && lastFcData.length === 0) {
+    refreshForecast();
+  }
   ['eco','dwd','radar'].forEach(v => {
     el('v-'+v).style.display  = v===name ? 'block' : 'none';
     el('t-'+v).className      = v===name ? 'tab active' : 'tab';
@@ -1504,7 +1585,10 @@ function setQuick(days){
   fetchAndRender();
 }
 el('chartModal').addEventListener('click',function(e){if(e.target===this)closeChart();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeChart();});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeChart(); closeDay(); }
+});
+el('dayModal').addEventListener('click', function(e) { if (e.target === this) closeDay(); });
 
 
 // ── Forecast constants ────────────────────────────────────────
@@ -1559,6 +1643,7 @@ async function refreshForecast() {
     if (!weather?.length) throw new Error('no data');
 
     const src = sources?.[0];
+    lastFcData = weather;
     renderHourly(weather);
     renderDailyFc(weather);
 
@@ -1639,20 +1724,150 @@ function renderDailyFc(weather) {
     const dayNames = lang === 'de' ? DAYS_DE : DAYS_EN;
     const dayLabel = isToday ? (lang==='de'?'Heute':'Today') : dayNames[date.getDay()];
 
+    const dayKey = date.toLocaleDateString('en-CA');
     const card = document.createElement('div');
-    card.className = 'd-card' + (isToday ? ' today' : '');
+    card.className = 'd-card'
+      + (isToday ? ' today' : '')
+      + (selectedDayKey === dayKey ? ' selected' : '');
     card.innerHTML = [
       `<div class="d-day">${dayLabel}</div>`,
       `<div class="d-ico">${ico}</div>`,
       `<div class="d-hi">${tmax}°</div>`,
       `<div class="d-lo">${tmin}°</div>`,
       `<div class="d-rain">${rain > 0 ? rain.toFixed(1)+' mm' : ''}</div>`,
+      `<div class="d-click-hint">▼ Details</div>`,
     ].join('');
+    card.onclick = () => openDay(dayKey, hours, date, ico, tmax, tmin, dayLabel);
     grid.appendChild(card);
   });
 }
 
 // ── Start ─────────────────────────────────────────────────────
+
+// ── Day names for modal ───────────────────────────────────────
+const DAYS_FULL_DE = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const DAYS_FULL_EN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+// ── Day detail modal ──────────────────────────────────────────
+function openDay(key, hours, date, ico, tmax, tmin, shortLabel) {
+  selectedDayKey = key;
+  renderDailyFc(lastFcData);   // re-render to show .selected state
+
+  // Header
+  const fullDays = lang === 'de' ? DAYS_FULL_DE : DAYS_FULL_EN;
+  const isTod    = isTodayDate(date.toISOString());
+  const fullDay  = isTod ? (lang==='de'?'Heute':'Today') : fullDays[date.getDay()];
+  const dateStr  = date.toLocaleDateString(lang==='de'?'de-DE':'en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+  set('modDay',  fullDay);
+  set('modDate', dateStr);
+  set('modIco',  ico);
+  set('modHi',   tmax !== '--' ? tmax+'°' : '--');
+  set('modLo',   tmin !== '--' ? tmin+'°' : '--');
+
+  // Stats grid
+  const rain     = hours.reduce((s,h) => s+(h.precipitation||0), 0);
+  const winds    = hours.map(h=>h.wind_speed).filter(v=>v!=null);
+  const gusts    = hours.map(h=>h.wind_gust_speed).filter(v=>v!=null);
+  const clouds   = hours.map(h=>h.cloud_cover).filter(v=>v!=null);
+  const sunshine = hours.reduce((s,h) => s+(h.sunshine||0), 0);
+  const pres     = hours.map(h=>h.pressure_msl).filter(v=>v!=null);
+  const avg      = a => a.length ? (a.reduce((x,y)=>x+y)/a.length).toFixed(1) : '--';
+
+  const stats = lang === 'de' ? [
+    { label:'🌧️ Niederschlag',   val: rain > 0 ? rain.toFixed(1)+' mm' : '0 mm' },
+    { label:'💨 Ø Wind',          val: avg(winds)+' km/h' },
+    { label:'💨 Max. Böe',        val: gusts.length ? Math.max(...gusts).toFixed(1)+' km/h' : '--' },
+    { label:'☁️ Ø Bewölkung',    val: clouds.length ? Math.round(avg(clouds))+'%' : '--' },
+    { label:'☀️ Sonnenschein',   val: sunshine > 0 ? (sunshine/60).toFixed(1)+' h' : '0 h' },
+    { label:'🌬️ Luftdruck',      val: pres.length ? Number(pres[Math.floor(pres.length/2)]).toFixed(1)+' hPa' : '--' },
+  ] : [
+    { label:'🌧️ Precipitation',  val: rain > 0 ? rain.toFixed(1)+' mm' : '0 mm' },
+    { label:'💨 Avg Wind',        val: avg(winds)+' km/h' },
+    { label:'💨 Max Gust',        val: gusts.length ? Math.max(...gusts).toFixed(1)+' km/h' : '--' },
+    { label:'☁️ Avg Cloud',      val: clouds.length ? Math.round(avg(clouds))+'%' : '--' },
+    { label:'☀️ Sunshine',       val: sunshine > 0 ? (sunshine/60).toFixed(1)+' h' : '0 h' },
+    { label:'🌬️ Pressure',       val: pres.length ? Number(pres[Math.floor(pres.length/2)]).toFixed(1)+' hPa' : '--' },
+  ];
+  el('modStats').innerHTML = stats
+    .map(s=>`<div class="dstat"><div class="dstat-label">${s.label}</div><div class="dstat-val">${s.val}</div></div>`)
+    .join('');
+
+  // Chart title
+  set('modChartTitle', lang==='de'
+    ? '🌡️ Temperatur & 🌧️ Niederschlag im Tagesverlauf'
+    : '🌡️ Temperature & 🌧️ Precipitation during the day');
+
+  // Destroy old chart
+  if (dayChart) { dayChart.destroy(); dayChart = null; }
+
+  // Hourly chart
+  const step    = Math.max(1, Math.floor(hours.length / 8));
+  const labels  = hours.map((h,i) => {
+    const ts = new Date(h.timestamp).toLocaleTimeString(lang==='de'?'de-DE':'en-GB',{hour:'2-digit',minute:'2-digit'});
+    return i % step === 0 ? ts : '';
+  });
+  const temps = hours.map(h => h.temperature);
+  const rains = hours.map(h => h.precipitation || 0);
+
+  dayChart = new Chart(el('dayChart'), {
+    data: {
+      labels,
+      datasets: [
+        { type:'line', label: lang==='de'?'Temperatur (°C)':'Temperature (°C)',
+          data: temps, borderColor:'#fb923c', backgroundColor:'rgba(251,146,60,.1)',
+          fill: true, tension:.35, borderWidth:1.5, pointRadius:0,
+          yAxisID:'y', spanGaps:true },
+        { type:'bar',  label: lang==='de'?'Niederschlag (mm)':'Precipitation (mm)',
+          data: rains, borderColor:'#22d3ee', backgroundColor:'rgba(34,211,238,.35)',
+          borderWidth:0, yAxisID:'y1' },
+      ],
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ display:false },
+        tooltip:{ backgroundColor:'#1a2332', titleColor:'#94a3b8', bodyColor:'#f1f5f9',
+                  borderColor:'rgba(255,255,255,.1)', borderWidth:1 }},
+      scales:{
+        x:{ ticks:{ color:'#94a3b8', font:{size:10}, maxRotation:0 },
+            grid:{ color:'rgba(255,255,255,.04)' }, border:{ color:'rgba(255,255,255,.08)' }},
+        y:{ position:'left',
+            ticks:{ color:'#fb923c', font:{size:10} },
+            grid:{ color:'rgba(255,255,255,.04)' }, border:{ color:'rgba(255,255,255,.08)' }},
+        y1:{ position:'right',
+             ticks:{ color:'#22d3ee', font:{size:10} },
+             grid:{ drawOnChartArea:false }, border:{ color:'rgba(255,255,255,.08)' }},
+      },
+    },
+  });
+
+  // Hourly list
+  set('modListTitle', lang==='de' ? '📋 Stündliche Übersicht' : '📋 Hourly Overview');
+  el('modHourList').innerHTML = hours.map(h => {
+    const time = new Date(h.timestamp)
+      .toLocaleTimeString(lang==='de'?'de-DE':'en-GB',{hour:'2-digit',minute:'2-digit'});
+    const rain = h.precipitation || 0;
+    const wind = h.wind_speed != null ? Math.round(h.wind_speed)+' km/h' : '';
+    return `<div class="dmod-row">
+      <div class="dmod-rtime">${time}</div>
+      <div class="dmod-rico">${wxIcon(h.icon)}</div>
+      <div class="dmod-rtemp">${h.temperature != null ? Number(h.temperature).toFixed(1)+'°' : '--'}</div>
+      <div class="dmod-rrain">${rain > 0 ? rain.toFixed(1)+' mm' : ''}</div>
+      <div class="dmod-rwind">${wind}</div>
+    </div>`;
+  }).join('');
+
+  el('dayModal').classList.add('open');
+}
+
+function closeDay() {
+  el('dayModal').classList.remove('open');
+  selectedDayKey = null;
+  if (dayChart) { dayChart.destroy(); dayChart = null; }
+  if (lastFcData.length) renderDailyFc(lastFcData);  // remove .selected highlight
+}
+
 // ── Restore last active tab before first fetch ───────────────
 const _savedTab = localStorage.getItem('wg_tab') || 'eco';
 if (_savedTab !== 'eco') switchView(_savedTab);  // eco is already default
@@ -1666,9 +1881,48 @@ setInterval(refreshDWD, 600000);
 refreshAlerts();
 setInterval(refreshAlerts, 300000);
 
-// Forecast: load immediately, refresh every 30 minutes
-refreshForecast();
+// Forecast refreshes every 30 minutes; initial load triggered when DWD tab opens
 setInterval(refreshForecast, 1800000);
 </script>
+
+<!-- ════════════ DAY DETAIL MODAL ════════════ -->
+<div class="modal" id="dayModal" role="dialog" aria-modal="true" aria-labelledby="modDay">
+  <div class="mbox">
+    <!-- Header: day name, date, icon, temps -->
+    <div class="dmod-hdr">
+      <div class="dmod-top">
+        <div>
+          <div class="dmod-day" id="modDay">--</div>
+          <div class="dmod-date" id="modDate">--</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <div class="dmod-ico" id="modIco">☀️</div>
+          <button class="dmod-close" onclick="closeDay()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <span data-key="close">Schließen</span>
+          </button>
+        </div>
+      </div>
+      <div class="dmod-temps">
+        <div class="dmod-hi" id="modHi">--°</div>
+        <div class="dmod-sep">↕</div>
+        <div class="dmod-lo" id="modLo">--°</div>
+      </div>
+    </div>
+    <!-- Key stats grid -->
+    <div class="dmod-stats" id="modStats"></div>
+    <!-- Hourly temp+rain chart -->
+    <div class="dmod-chart">
+      <div class="dmod-cht-title" id="modChartTitle">🌡️ Temperatur &amp; 🌧️ Niederschlag</div>
+      <div class="dmod-cw"><canvas id="dayChart" aria-label="Tagesverlauf Temperatur und Niederschlag"></canvas></div>
+    </div>
+    <!-- Hourly list -->
+    <div class="dmod-list">
+      <div class="dmod-lst-title" id="modListTitle">📋 Stündliche Übersicht</div>
+      <div id="modHourList"></div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
