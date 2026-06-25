@@ -767,10 +767,61 @@
 
 <footer data-key="footer">Gründau · Ecowitt alle 30s · DWD alle 10 Min.</footer>
 
+<!-- ════════════ DAY DETAIL MODAL ════════════ -->
+<div class="modal" id="dayModal" role="dialog" aria-modal="true" aria-labelledby="modDay">
+  <div class="mbox">
+    <!-- Header: day name, date, icon, temps -->
+    <div class="dmod-hdr">
+      <div class="dmod-top">
+        <div>
+          <div class="dmod-day" id="modDay">--</div>
+          <div class="dmod-date" id="modDate">--</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <div class="dmod-ico" id="modIco">☀️</div>
+          <button class="dmod-close" onclick="closeDay()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <span data-key="close">Schließen</span>
+          </button>
+        </div>
+      </div>
+      <div class="dmod-temps">
+        <div class="dmod-hi" id="modHi">--°</div>
+        <div class="dmod-sep">↕</div>
+        <div class="dmod-lo" id="modLo">--°</div>
+      </div>
+    </div>
+    <!-- Key stats grid -->
+    <div class="dmod-stats" id="modStats"></div>
+    <!-- Hourly temp+rain chart -->
+    <div class="dmod-chart">
+      <div class="dmod-cht-title" id="modChartTitle">🌡️ Temperatur &amp; 🌧️ Niederschlag</div>
+      <div class="dmod-cw"><canvas id="dayChart" aria-label="Tagesverlauf Temperatur und Niederschlag"></canvas></div>
+    </div>
+    <!-- Hourly list -->
+    <div class="dmod-list">
+      <div class="dmod-lst-title" id="modListTitle">📋 Stündliche Übersicht</div>
+      <div id="modHourList"></div>
+    </div>
+  </div>
+</div>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 'use strict';
+// ── Icon + day-name constants — declared first to avoid any TDZ risk ──────
+const WX_ICONS = {
+  'clear-day':'☀️','clear-night':'🌙',
+  'partly-cloudy-day':'⛅','partly-cloudy-night':'🌑',
+  'cloudy':'☁️','fog':'🌫️','wind':'💨',
+  'rain':'🌧️','sleet':'🌨️','snow':'❄️',
+  'hail':'🌩️','thunderstorm':'⛈️',
+};
+const DAYS_DE   = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+const DAYS_EN   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function wxIcon(key) { return WX_ICONS[key] || '🌡️'; }
 
 // ── FIX 1: Correct coordinates for Gründau-Gettenbach ────────
 // Was: LAT=50.155, LON=9.335 (→ Bieber!)  Now: correct location
@@ -1591,18 +1642,8 @@ document.addEventListener('keydown', e => {
 el('dayModal').addEventListener('click', function(e) { if (e.target === this) closeDay(); });
 
 
-// ── Forecast constants ────────────────────────────────────────
-const WX_ICONS = {
-  'clear-day':'☀️','clear-night':'🌙',
-  'partly-cloudy-day':'⛅','partly-cloudy-night':'🌑',
-  'cloudy':'☁️','fog':'🌫️','wind':'💨',
-  'rain':'🌧️','sleet':'🌨️','snow':'❄️',
-  'hail':'🌩️','thunderstorm':'⛈️',
-};
-const DAYS_DE = ['So','Mo','Di','Mi','Do','Fr','Sa'];
-const DAYS_EN = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+// (WX_ICONS and DAYS_* moved to top of script)
 
-function wxIcon(key)    { return WX_ICONS[key] || '🌡️'; }
 function isNowHour(iso) {
   const d=new Date(iso), n=new Date();
   return d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth()
@@ -1884,45 +1925,6 @@ setInterval(refreshAlerts, 300000);
 // Forecast refreshes every 30 minutes; initial load triggered when DWD tab opens
 setInterval(refreshForecast, 1800000);
 </script>
-
-<!-- ════════════ DAY DETAIL MODAL ════════════ -->
-<div class="modal" id="dayModal" role="dialog" aria-modal="true" aria-labelledby="modDay">
-  <div class="mbox">
-    <!-- Header: day name, date, icon, temps -->
-    <div class="dmod-hdr">
-      <div class="dmod-top">
-        <div>
-          <div class="dmod-day" id="modDay">--</div>
-          <div class="dmod-date" id="modDate">--</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:.75rem">
-          <div class="dmod-ico" id="modIco">☀️</div>
-          <button class="dmod-close" onclick="closeDay()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            <span data-key="close">Schließen</span>
-          </button>
-        </div>
-      </div>
-      <div class="dmod-temps">
-        <div class="dmod-hi" id="modHi">--°</div>
-        <div class="dmod-sep">↕</div>
-        <div class="dmod-lo" id="modLo">--°</div>
-      </div>
-    </div>
-    <!-- Key stats grid -->
-    <div class="dmod-stats" id="modStats"></div>
-    <!-- Hourly temp+rain chart -->
-    <div class="dmod-chart">
-      <div class="dmod-cht-title" id="modChartTitle">🌡️ Temperatur &amp; 🌧️ Niederschlag</div>
-      <div class="dmod-cw"><canvas id="dayChart" aria-label="Tagesverlauf Temperatur und Niederschlag"></canvas></div>
-    </div>
-    <!-- Hourly list -->
-    <div class="dmod-list">
-      <div class="dmod-lst-title" id="modListTitle">📋 Stündliche Übersicht</div>
-      <div id="modHourList"></div>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
