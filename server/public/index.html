@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap');
+    svg.logo-img, img.logo-img { width:38px!important; height:38px!important; flex-shrink:0; border-radius:10px; }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#060b14;--layer1:rgba(255,255,255,.045);--layer2:rgba(255,255,255,.07);
           --brd:rgba(255,255,255,.08);--tx:#f0f4ff;--mu:#7b8db0;--dim:#3a4a6a}
@@ -19,20 +20,19 @@
          background-image:radial-gradient(ellipse 80% 40% at 50% -20%,rgba(96,130,250,.1) 0%,transparent 70%)}
 
     /* Header */
-    header{max-width:1100px;margin:0 auto .9rem;display:flex;align-items:center;
-           justify-content:space-between;flex-wrap:wrap;gap:.5rem;position:relative}
+    header{max-width:1100px;margin:0 auto .9rem;text-align:center;position:relative}
     h1{font-size:1.2rem;font-weight:600;letter-spacing:-.02em;
        background:linear-gradient(135deg,#93c5fd,#c4b5fd);
        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .lw{display:flex;gap:2px;background:rgba(255,255,255,.05);border-radius:7px;padding:3px}
+    .lw{position:absolute;right:0;top:0;display:flex;gap:2px;background:rgba(255,255,255,.05);border-radius:7px;padding:3px}
     .lb{padding:3px 9px;border:none;background:transparent;color:var(--mu);border-radius:5px;
         cursor:pointer;font-size:.7rem;font-family:inherit;font-weight:700}
     .lb.active{background:rgba(255,255,255,.1);color:var(--tx)}
-    .sr{display:flex;align-items:center;gap:6px;color:var(--mu);font-size:.72rem;margin-top:.2rem}
+    .sr{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--mu);font-size:.72rem;margin-top:.35rem}
     .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0;
          animation:pulse 2.5s infinite}
     @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4)}50%{box-shadow:0 0 0 5px rgba(74,222,128,0)}}
-    @media(max-width:639px){.lw{position:static;margin-left:6px}.sr{flex-wrap:wrap;justify-content:center}}
+    @media(max-width:639px){.lw{position:static;margin-left:6px}.sr{flex-wrap:wrap;justify-content:center;margin-top:.25rem}}
 
     /* Alert */
     #alertWrap{max-width:1100px;margin:0 auto .9rem}
@@ -368,37 +368,6 @@
 
 <!-- ════════════ ECOWITT VIEW ════════════ -->
 <div id="v-eco">
-  <div id="hero" style="margin-bottom:1rem">
-    <div id="heroGlow"></div>
-    <div class="hbody">
-      <div>
-        <div class="cpill"><span id="condIcon">⏳</span><span id="condText">--</span></div>
-        <div class="htemp"><span id="heroTemp">--</span><span>°C</span></div>
-        <div class="hsub" style="margin-top:.45rem">
-          <span data-key="feelsLike">Gefühlt</span> <b id="heroFeels">--</b>°C &nbsp;·&nbsp;
-          <span data-key="minLabel">Min</span> <b id="heroMin" style="color:#60a5fa">--</b>° /
-          <span data-key="maxLabel">Max</span> <b id="heroMax" style="color:#f97316">--</b>°
-        </div>
-        <div class="hsub">
-          <span data-key="humidity">Luftfeuchtigkeit</span> <b id="heroHumi">--%</b> &nbsp;·&nbsp;
-          <span data-key="dewPoint">Taupunkt</span> <b id="heroDew">--</b>°C
-        </div>
-      </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div class="sunrow">🌅 <b id="sunrise">--:--</b></div>
-        <div class="sunrow">🌇 <b id="sunset">--:--</b></div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- Section header: Ecowitt data -->
-  <div class="sec-hdr">
-    <span class="sec-emoji">📡</span>
-    <span class="sec-title" data-key="ecoSecTitle">Ecowitt Sensordaten</span>
-    <span class="sec-sub">Live · Gründau-Gettenbach</span>
-  </div>
-
   <!-- ─── Bento grid ────────────────────────────────────── -->
   <div class="bento">
 
