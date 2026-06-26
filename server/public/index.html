@@ -298,8 +298,21 @@
 
     footer{text-align:center;margin-top:1.5rem;color:var(--dim);font-size:.72rem;
            max-width:1100px;margin-left:auto;margin-right:auto}
-    @media(max-width:640px){.bento{grid-template-columns:1fr}.sec-hdr,.sbar,.fc-wrap,.d-grid{grid-column:span 1}
-      .g[style*="span 2"]{grid-column:span 1!important}}
+    @media(max-width:640px){
+      .bento{grid-template-columns:1fr}
+      .sec-hdr,.sbar,.fc-wrap,.d-grid{grid-column:span 1}
+      .g[style*="span 2"]{grid-column:span 1!important}
+      .wlay{flex-wrap:wrap;justify-content:center}
+      .wlay .compass{width:70px;height:70px}
+      .spark{overflow:hidden}
+      .h-scroll{padding-bottom:8px}
+      .bft-tag{font-size:.6rem}
+    }
+    @media(max-width:480px){
+      .wbig{font-size:2rem}
+      .bv{font-size:2.6rem}
+      .d-grid{grid-template-columns:repeat(4,1fr)}
+    }
   </style>
 </head>
 <body>
@@ -581,7 +594,7 @@
       <div class="sub" data-key="lastHour">Letzte Stunde</div>
       <div style="margin-top:.7rem">
         <div class="rrow"><span style="color:var(--mu)" data-key="last30">Letzte 30 Min.</span><span class="rv" id="dwdPrecip30">-- mm</span></div>
-        <div class="rrow"><span style="color:var(--mu)">☀️ <span data-key="sunshine">Sonnenschein heute</span></span><span class="rv" style="color:#fde68a" id="dwdSunshine">-- h</span></div>
+
       </div>
       <div class="spark" id="sp-drain"></div>
     </div>
@@ -1113,7 +1126,8 @@ async function refreshAlerts() {
     el('alertOkBanner').style.display = 'none';
     el('alertBanner').style.display   = 'block';
     el('alertHead').style.cssText = `display:flex;align-items:center;gap:10px;padding:10px 15px;border-radius:12px;background:${sev.bg};border:1px solid ${sev.brd}`;
-    el('alertBody').style.cssText = `padding:11px 15px;border-top:none;border-radius:0 0 12px 12px;background:${sev.bg.replace('.1','.06')};border:1px solid ${sev.brd};border-top:none`;
+    el('alertBody').style.cssText = `display:none;padding:11px 15px;border-top:none;border-radius:0 0 12px 12px;background:${sev.bg.replace('.1','.06')};border:1px solid ${sev.brd};border-top:none`;
+    alertOpen = false;  // always start collapsed
     el('alertTitle').style.color  = sev.c;
     const until = new Date(alert.expires).toLocaleTimeString(lang==='de'?'de-DE':'en-GB',{hour:'2-digit',minute:'2-digit'});
     el('alertTitle').innerHTML = `<b>${lang==='de'?(alert.event_de||alert.event_en||'Warnung'):alert.event_en||'Warning'} · ${sev.l}</b>`
