@@ -504,7 +504,7 @@
         <div>
           <div class="bv" style="color:#fde68a"><span id="lightningCount">--</span><span class="bu"> heute</span></div>
           <div class="sub"><span data-key="lastStrike">Letzter Einschlag</span>: <b id="lightningDist">-- km</b></div>
-          <div class="lbadge" id="lightningBadge">⚡ <span data-key="lastTime">Zuletzt</span>: --</div>
+          <div class="lbadge" id="lightningBadge">⚡ <span data-key="lastTime">Zuletzt</span>: <span id="lTime">--</span></div>
         </div>
         <div class="spark" id="sp-light" style="flex:1;margin:0;min-width:120px"></div>
       </div>
@@ -1205,7 +1205,7 @@ function applyEcoToUI(d, sparks) {
   if (d.lightning.lastTime) {
     lb.style.display = 'inline-flex';
     const s = Math.floor((Date.now()-new Date(d.lightning.lastTime))/1000);
-    lb.querySelector('#lTime').textContent = lang==='de'
+    const lt = lb.querySelector('#lTime'); if(lt) lt.textContent = lang==='de'
       ? (s<3600?`vor ${Math.floor(s/60)} min`:`vor ${Math.floor(s/3600)} h`)
       : (s<3600?`${Math.floor(s/60)} min ago`:`${Math.floor(s/3600)}h ago`);
   } else {
@@ -1223,8 +1223,13 @@ function applyEcoToUI(d, sparks) {
     Falling: '<line x1="5" y1="5" x2="19" y2="19"/><polyline points="19 12 19 19 12 19"/>',
     Stable:  '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
   };
-  el('pressureTrend').innerHTML = trendPaths[trend];
-  el('pressureTrend').style.color = trend==='Rising'?'#4ade80':trend==='Falling'?'#f87171':'#94a3b8';
+  const pt = el('pressureTrend');
+  if (pt) {
+    const arrows = { Rising: '↗', Falling: '↘', Stable: '→' };
+    const colors = { Rising: '#4ade80', Falling: '#f87171', Stable: '#94a3b8' };
+    pt.textContent = (arrows[trend] || '→') + ' ' + t('pressure'+trend) + ' · ' + t('seaLevel');
+    pt.style.color = colors[trend] || '#94a3b8';
+  }
 
   // UV/Solar card
   const uv = d.solar.uv;
@@ -1310,7 +1315,7 @@ function applyDWDToUI(w, src) {
 
   // Pressure
   set('dwdPressure', fmt(w.pressure_msl, 1));
-  set('dwdPressure', t('pressureStable'));
+  // trend shown in trend-row below the value
 
   // Visibility
   const visKm = w.visibility != null ? +(w.visibility/1000).toFixed(1) : null;
@@ -1334,7 +1339,7 @@ async function loadDWDSparklines() {
     makeSpark('sp-dwd-temp',  weather.map(d=>d.temperature),                         '#fb923c');
     makeSpark('sp-dwd-wind',  weather.map(d=>d.wind_speed),                          '#60a5fa');
     makeSpark('sp-dwd-rain',  weather.map(d=>d.precipitation),                       '#22d3ee');
-    makeSpark('sp-dwd-press', weather.map(d=>d.pressure_msl),                        '#6366f1');
+    makeSpark('sp-dpress', weather.map(d=>d.pressure_msl),                        '#6366f1');
     makeSpark('sp-dwd-vis',   weather.map(d=>d.visibility!=null?d.visibility/1000:null),'#10b981');
   } catch(_) {}
 }
