@@ -200,7 +200,6 @@
 
     /* 7-day forecast */
     .d-grid{grid-column:span 2;display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-    @media(max-width:640px){.d-grid{grid-template-columns:repeat(4,1fr)}}
     .d-card{background:var(--layer1);border:1px solid var(--brd);border-radius:13px;
             padding:9px 5px;display:flex;flex-direction:column;align-items:center;gap:3px;
             cursor:pointer;transition:all .15s}
@@ -298,20 +297,98 @@
 
     footer{text-align:center;margin-top:1.5rem;color:var(--dim);font-size:.72rem;
            max-width:1100px;margin-left:auto;margin-right:auto}
-    @media(max-width:640px){
+    @media(max-width:768px){
+      /* Single-column bento on all mobile sizes */
       .bento{grid-template-columns:1fr}
-      .sec-hdr,.sbar,.fc-wrap,.d-grid{grid-column:span 1}
+      .sec-hdr,.sbar,.fc-wrap,.d-grid{grid-column:span 1!important}
       .g[style*="span 2"]{grid-column:span 1!important}
-      .wlay{flex-wrap:wrap;justify-content:center}
-      .wlay .compass{width:70px;height:70px}
+
+      /* Station bar — clip overflow */
+      .sbar{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex-wrap:nowrap}
+      .sbar span:first-of-type{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+
+      /* Cards — tighter padding */
+      .g{padding:1rem 1.1rem}
+
+      /* Wind — stack compass + data vertically */
+      .wlay{flex-direction:column;align-items:flex-start;gap:.6rem}
+      .wlay .compass{width:80px;height:80px}
+      .wbig{font-size:2.4rem}
+
+      /* Big numbers slightly smaller */
+      .bv{font-size:2.8rem}
+
+      /* Sicht & Bewölkung — stack two values */
+      .g[style*="span 2"] > div[style*="flex"]{flex-direction:column;gap:1rem}
+
+      /* Sparklines — no overflow */
       .spark{overflow:hidden}
-      .h-scroll{padding-bottom:8px}
-      .bft-tag{font-size:.6rem}
+
+      /* 7-day grid — 4 columns, compact */
+      .d-grid{
+        grid-template-columns:repeat(4,1fr)!important;
+        gap:5px
+      }
+      .d-card{padding:7px 4px;border-radius:10px}
+      .d-day{font-size:.58rem}
+      .d-ico{font-size:1.2rem}
+      .d-hi{font-size:.75rem}
+      .d-lo{font-size:.65rem}
+      .d-rain{font-size:.55rem}
+      .d-click-hint{font-size:.48rem}
+
+      /* Hourly strip — smaller cards */
+      .h-card{width:62px;padding:7px 4px}
+      .h-ico{font-size:1.2rem}
+      .h-temp{font-size:.72rem}
+      .h-time{font-size:.58rem}
+      .h-rain{font-size:.55rem}
+      .h-wind{font-size:.52rem}
+
+      /* Section headers */
+      .sec-hdr{padding-bottom:.4rem;margin-top:.75rem}
+
+      /* Bft tag */
+      .bft-tag{font-size:.62rem;padding:2px 7px}
     }
-    @media(max-width:480px){
-      .wbig{font-size:2rem}
-      .bv{font-size:2.6rem}
-      .d-grid{grid-template-columns:repeat(4,1fr)}
+
+    /* Extra mobile fixes */
+    @media(max-width:768px){
+      /* Ensure ALL cards have visible background on mobile */
+      .g{background:rgba(255,255,255,.07)!important;min-height:auto}
+
+      /* Spark takes no space when empty */
+      .spark:empty{display:none}
+      .spark svg{display:block}
+
+      /* Wind card: horizontal layout on mobile (compass left, data right) */
+      .wlay{flex-direction:row!important;align-items:center!important;gap:.75rem!important}
+      .wlay .compass{width:75px!important;height:75px!important;flex-shrink:0}
+      .wbig{font-size:2rem!important}
+
+      /* Sicht card inner: stack on narrow screens */
+      #v-dwd .g[style*="span 2"] > div{flex-direction:column!important;gap:.75rem!important}
+      #v-dwd .g[style*="span 2"] > div > .spark{flex:none!important;margin:0!important}
+
+      /* Station bar: hard clip */
+      .sbar{overflow:hidden}
+      #dwdStationName{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+      /* 7-day grid */
+      #dailyGrid{
+        display:grid!important;
+        grid-template-columns:repeat(4,1fr)!important;
+        grid-column:span 1!important;
+        gap:4px!important
+      }
+
+      /* Rain card row values visible */
+      .rrow{font-size:.78rem}
+      .rv{font-size:.78rem}
+
+      /* Forecast section headers */
+      .fc-wrap{grid-column:span 1!important}
+      .sec-hdr{grid-column:span 1!important}
     }
   </style>
 </head>
@@ -532,7 +609,7 @@
 
     <!-- Station bar -->
     <div class="sbar" id="dwdSbar">
-      🏢 <span id="dwdStationName" data-key="dwdLoading">Lade DWD-Daten…</span>
+      🏢 <span id="dwdStationName" data-key="dwdLoading" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1">Lade DWD-Daten…</span>
       <div class="sbar-live"><div class="dot"></div><b id="dwdUpdateTime">--:--</b></div>
     </div>
 
