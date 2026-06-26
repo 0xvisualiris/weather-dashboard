@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap');
-    svg.logo-img, img.logo-img { width:38px!important; height:38px!important; flex-shrink:0; border-radius:10px; }
+    .h-logo { width:38px!important; height:38px!important; border-radius:8px; flex-shrink:0; display:block; }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#060b14;--layer1:rgba(255,255,255,.045);--layer2:rgba(255,255,255,.07);
           --brd:rgba(255,255,255,.08);--tx:#f0f4ff;--mu:#7b8db0;--dim:#3a4a6a}
@@ -1158,7 +1158,7 @@ function applyEcoToUI(d, sparks) {
   const cond = getCondition(d);
   set('condIcon', cond.icon);
   set('condText', t(cond.key));
-  el('heroGlow').style.background = `radial-gradient(circle,${cond.glow} 0%,transparent 70%)`;
+  const hg=el('heroGlow'); if(hg) hg.style.background=`radial-gradient(circle,${cond.glow} 0%,transparent 70%)`;
   set('heroTemp',  fmt(d.outdoor.temp));
   const fl = feelsLikeCalc(d.outdoor.temp, d.outdoor.humidity, d.wind.speed);
   set('heroFeels', fl ?? '--');
